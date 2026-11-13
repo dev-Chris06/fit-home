@@ -43,6 +43,18 @@ jobs:
         if: steps.check.outputs.ready == 'true'
         run: flutter test
 
+      - name: Captures d'écran de contrôle
+        if: steps.check.outputs.ready == 'true'
+        continue-on-error: true
+        run: flutter test screenshots/ --update-goldens
+
+      - uses: actions/upload-artifact@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          name: captures
+          path: screenshots/captures/
+          retention-days: 7
+
       - name: Clé de signature (si configurée)
         if: steps.check.outputs.ready == 'true'
         env:
