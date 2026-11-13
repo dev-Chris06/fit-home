@@ -1,0 +1,63 @@
+# Publication d'une version : se déclenche quand un tag « vX.Y.Z » est envoyé.
+# Construit l'APK signé, puis crée la « release » GitHub avec le fichier fit-home.apk.
+# C'est cette release que l'app consulte quand on appuie sur « Rechercher une mise à jour ».
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Dépendances et tests
+        run: |
+          flutter pub get
+          flutter test
+
+      - name: Clé de signature
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then echo "::error::La clé de signature n'est pas configurée (secrets ANDROID_*)."; exit 1; fi
+          echo "$KEYSTORE_B64" | base64 -d > android/app/upload-keystore.jks
+          printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=upload-keystore.jks\n" "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > android/key.properties
+
+      - name: Construire l'APK signé
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          # build-number : toujours croissant pour qu'Android accepte la mise à jour par-dessus l'ancienne version.
+          BUILD=$(( $(date +%s) / 60 ))
+          flutter build apk --release --build-name="$VERSION" --build-number="$BUILD"
+          cp build/app/outputs/flutter-apk/app-release.apk fit-home.apk
+
+      - name: Notes de version (depuis CHANGELOG.md)
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v v="## $VERSION" 'index($0, v)==1 {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then echo "Version $VERSION de Fit Home." > notes.md; fi
+          cat notes.md
+
+      - name: Publier la release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" fit-home.apk --title "Fit Home ${GITHUB_REF_NAME#v}" --notes-file notes.md --latest

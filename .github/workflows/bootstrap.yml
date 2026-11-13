@@ -1,0 +1,53 @@
+# Génère une seule fois le projet Android (dossier android/) avec `flutter create`,
+# ajoute les dépendances avec `flutter pub add` (versions compatibles choisies automatiquement),
+# puis enregistre le résultat dans le dépôt. Si le dossier android/ existe déjà, ce workflow ne fait rien.
+name: bootstrap
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Le projet Android existe-t-il déjà ?
+        id: check
+        run: |
+          if [ -d android ]; then echo "need=false" >> "$GITHUB_OUTPUT"; else echo "need=true" >> "$GITHUB_OUTPUT"; fi
+
+      - uses: actions/setup-java@v4
+        if: steps.check.outputs.need == 'true'
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        if: steps.check.outputs.need == 'true'
+        with:
+          channel: stable
+          cache: true
+
+      - name: Générer le projet Android et ajouter les dépendances
+        if: steps.check.outputs.need == 'true'
+        run: |
+          flutter --version
+          flutter create --org com.devchris06 --project-name fit_home --platforms android .
+          flutter pub add shared_preferences http package_info_plus url_launcher wakelock_plus
+          flutter pub add --dev flutter_lints
+          flutter --version --machine > docs/flutter-version.json
+
+      - name: Enregistrer dans le dépôt
+        if: steps.check.outputs.need == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(android): projet Android généré par flutter create + dépendances"
+          git push

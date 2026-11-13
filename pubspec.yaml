@@ -1,0 +1,25 @@
+name: fit_home
+description: "Fit Home — programme sportif à la maison, 100 % hors ligne."
+publish_to: 'none'
+
+# La version affichée dans l'app. Le workflow de release la remplace par celle du tag (v1.2.3 → 1.2.3).
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+# Les dépendances (shared_preferences, http, package_info_plus, url_launcher, wakelock_plus)
+# sont ajoutées par le workflow « bootstrap » avec `flutter pub add`, qui choisit
+# automatiquement les versions compatibles avec le Flutter utilisé par la CI.
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

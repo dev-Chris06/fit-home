@@ -1,0 +1,68 @@
+# À chaque envoi de code : analyse, tests, puis construction d'un APK de contrôle (téléchargeable dans
+# l'onglet Actions de GitHub, rubrique « Artifacts »). Ne publie rien.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Le projet Android existe-t-il ?
+        id: check
+        run: |
+          if [ -d android ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; else echo "ready=false" >> "$GITHUB_OUTPUT"; echo "En attente du workflow bootstrap."; fi
+
+      - uses: actions/setup-java@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        if: steps.check.outputs.ready == 'true'
+        with:
+          channel: stable
+          cache: true
+
+      - name: Dépendances
+        if: steps.check.outputs.ready == 'true'
+        run: flutter pub get
+
+      - name: Analyse du code
+        if: steps.check.outputs.ready == 'true'
+        run: flutter analyze --no-fatal-infos
+
+      - name: Tests
+        if: steps.check.outputs.ready == 'true'
+        run: flutter test
+
+      - name: Clé de signature (si configurée)
+        if: steps.check.outputs.ready == 'true'
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > android/app/upload-keystore.jks
+            printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=upload-keystore.jks\n" "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > android/key.properties
+          fi
+
+      - name: Construire l'APK
+        if: steps.check.outputs.ready == 'true'
+        run: flutter build apk --release --build-name=0.0.${{ github.run_number }} --build-number=${{ github.run_number }}
+
+      - uses: actions/upload-artifact@v4
+        if: steps.check.outputs.ready == 'true'
+        with:
+          name: fit-home-apk-controle
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
