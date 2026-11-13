@@ -120,4 +120,30 @@ Le numéro de build Android (`versionCode`) est calculé à partir de l'heure : 
 
 ### Étape 5 — Compilation, corrections et publication
 
-*(complétée au fil de la compilation sur GitHub Actions)*
+La CI utilise **Flutter 3.50.0** (Dart 3.14). Voici les problèmes rencontrés et leur solution : c'est la partie la plus instructive.
+
+| Problème | Cause | Solution |
+| --- | --- | --- |
+| Le workflow `bootstrap` échoue : « No such file or directory » | Git ne garde pas les dossiers vides : `docs/` n'existait pas sur la machine GitHub | `mkdir -p docs` avant d'y écrire |
+| `ambiguous_import` sur `Ink` | Notre classe de couleurs s'appelait `Ink`, comme un widget de Flutter | Renommée `Tone` (même problème que `Step` → `PlanStep` à l'étape 1) |
+| La construction de l'APK plante dans `lintVitalAnalyzeRelease` | Bug de l'outil d'analyse Android sur le code du plugin `url_launcher_android` | Tâches `lintVital*` désactivées dans `android/build.gradle.kts` (nos tests Dart restent actifs) |
+| Avertissement sur `setMockInitialValues` | Une fonction réservée aux tests utilisée hors du dossier `test/` | Dossier `screenshots/` exclu de l'analyse |
+| Impossible de télécharger les captures depuis l'onglet Actions | Le stockage des « artifacts » n'est pas accessible depuis l'environnement de travail | La CI publie aussi les captures sur une branche `captures` |
+
+**Les avertissements « material.dart is deprecated »** : depuis Flutter 3.47, la bibliothèque Material est déplacée dans un
+paquet séparé (`material_ui`). Ce ne sont que des informations, le code fonctionne ; la migration pourra se faire dans une prochaine version.
+
+**Les captures de contrôle** (`screenshots/screens_test.dart`) : sans téléphone ni émulateur, la CI « photographie » les écrans
+principaux et les 32 animations avec des tests Flutter (`matchesGoldenFile` + `--update-goldens`). On les retrouve sur la branche
+`captures` du dépôt. C'est ainsi que l'interface a été vérifiée à l'œil avant la publication.
+
+**Résultat** : 45 tests verts (logique, 32 animations sans membre sous le sol, démarrage de l'app), APK signé, release `v1.0.0`.
+
+---
+
+## Publier une nouvelle version (mode d'emploi)
+
+1. Modifier le code, envoyer sur `main`, attendre que le workflow `ci` soit vert.
+2. Ajouter en haut de `CHANGELOG.md` une section `## 1.0.1` avec les nouveautés.
+3. Créer et envoyer le tag : `git tag v1.0.1 && git push origin v1.0.1`.
+4. Le workflow `release` publie `fit-home.apk`. Dans l'app, « Rechercher une mise à jour » la propose aussitôt.

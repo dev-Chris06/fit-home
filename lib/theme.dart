@@ -23,7 +23,7 @@ ThemeData buildTheme() {
     error: Palette.accent,
     onError: Palette.ground,
   );
-  final base = ThemeData(useMaterial3: true, colorScheme: scheme, brightness: Brightness.dark);
+  final base = ThemeData(useMaterial3: true, colorScheme: scheme, brightness: Brightness.dark, fontFamily: 'Roboto');
   return base.copyWith(
     scaffoldBackgroundColor: Palette.ground,
     appBarTheme: const AppBarTheme(
@@ -41,7 +41,7 @@ ThemeData buildTheme() {
         backgroundColor: Palette.main,
         foregroundColor: Palette.ground,
         minimumSize: const Size(64, 52),
-        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+        textStyle: const TextStyle(fontFamily: 'Roboto', fontSize: 16, fontWeight: FontWeight.w700),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     ),

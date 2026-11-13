@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
           children: [
-            const Eyebrow('Programme maison · rotation A → B → C', color: Palette.muted),
+            const Eyebrow('Programme maison · rotation A, B, C', color: Palette.muted),
             const SizedBox(height: 4),
             const Text('Fit Home', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800)),
             const SizedBox(height: 16),
