@@ -85,7 +85,7 @@ class HomeScreen extends StatelessWidget {
             AdviceBanner(app.palierAdvice, app.palier),
             if (app.palierAdvice != null) const SizedBox(height: 12),
             Panel(
-              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => GuidedSessionScreen(session: sessionP))),
+              onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GuidedSessionScreen(session: sessionP))),
               child: const Row(children: [
                 Icon(Icons.self_improvement, color: Palette.main),
                 SizedBox(width: 12),

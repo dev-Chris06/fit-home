@@ -1,6 +1,6 @@
 // Le widget qui joue l'animation d'un exercice en boucle.
 // Un Ticker (≈ 60 images/s) fait avancer le temps t ; le ScenePainter redessine la scène à chaque image.
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'exercise_anims.dart';
@@ -16,7 +16,7 @@ class ScenePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    canvas.drawRect(Offset.zero & size, Paint()..color = Ink.ground);
+    canvas.drawRect(Offset.zero & size, Paint()..color = Tone.ground);
     final spec = exerciseAnims[exerciseId];
     if (spec == null) return;
     final scene = Scene();

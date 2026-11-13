@@ -11,7 +11,7 @@ import 'dart:ui';
 // ---------------------------------------------------------------------------------------------
 // Couleurs (les mêmes mélanges que les animations web)
 // ---------------------------------------------------------------------------------------------
-class Ink {
+class Tone {
   static const ground = Color(0xFF0F2236);
   static const main = Color(0xFF3DDC97);
   static const second = Color(0xFFF2F5F7);
@@ -249,9 +249,9 @@ class ZoneShape extends Shape {
     c.rotate(rot * rad);
     c.scale(rx / 50, ry / 50);
     final shader = Gradient.radial(Offset.zero, 50, [
-      Ink.accent.withValues(alpha: .9 * opacity),
-      Ink.accent.withValues(alpha: .45 * opacity),
-      Ink.accent.withValues(alpha: 0),
+      Tone.accent.withValues(alpha: .9 * opacity),
+      Tone.accent.withValues(alpha: .45 * opacity),
+      Tone.accent.withValues(alpha: 0),
     ], [0, .5, 1]);
     c.drawCircle(Offset.zero, 50, Paint()..shader = shader);
     c.restore();
@@ -297,10 +297,10 @@ class Scene {
   void room({bool floor = true}) {
     add(_DotsShape());
     if (!floor) return;
-    rect(0, 880, 1920, 200, Ink.floor);
-    rect(0, 878, 1920, 4, Ink.line);
-    rect(860, 868, 940, 20, Ink.mat, r: 10);
-    rect(860, 868, 940, 6, Ink.matLit, r: 3);
+    rect(0, 880, 1920, 200, Tone.floor);
+    rect(0, 878, 1920, 4, Tone.line);
+    rect(860, 868, 940, 20, Tone.mat, r: 10);
+    rect(860, 868, 940, 6, Tone.matLit, r: 3);
   }
 
   /// Le halo du muscle : apparaît vers 0,6 s puis pulse doucement.
@@ -319,20 +319,20 @@ class Scene {
         ? [Offset(pos.dx, pos.dy - 50), Offset(pos.dx, pos.dy + 40)]
         : [Offset(pos.dx, pos.dy + 50), Offset(pos.dx, pos.dy - 40)];
     final tip = pts[1], dir = pointsDown ? -1.0 : 1.0;
-    stroke(pts, Ink.accent, 10, opacity: op);
-    stroke([Offset(tip.dx - 24, tip.dy + 24 * dir), tip, Offset(tip.dx + 24, tip.dy + 24 * dir)], Ink.accent, 10, opacity: op);
+    stroke(pts, Tone.accent, 10, opacity: op);
+    stroke([Offset(tip.dx - 24, tip.dy + 24 * dir), tip, Offset(tip.dx + 24, tip.dy + 24 * dir)], Tone.accent, 10, opacity: op);
   }
 
   /// Dessine la silhouette (ombre, membres éloignés, buste, membres proches, tête, accessoires).
   void figure(Body b, {Prop? prop, Prop? farProp, double propRot = 0, double farPropRot = 0, double shadowRx = 160, double floorY = 878}) {
-    ellipse(Offset(b.hip.dx, floorY), shadowRx, 14, Ink.shade);
-    stroke(b.farLeg, Ink.far, 36, tag: 'farleg');
-    stroke(b.farArm, Ink.far, 30, tag: 'fararm');
+    ellipse(Offset(b.hip.dx, floorY), shadowRx, 14, Tone.shade);
+    stroke(b.farLeg, Tone.far, 36, tag: 'farleg');
+    stroke(b.farArm, Tone.far, 30, tag: 'fararm');
     if (farProp != null) farProp(this, b.farHand, farPropRot, true);
-    stroke([b.hip, b.sh], Ink.main, 54, ctrl: b.midPt, tag: 'torso');
-    stroke(b.leg, Ink.main, 38, tag: 'leg');
-    circle(b.hd, 38, Ink.main, tag: 'head');
-    stroke(b.arm, Ink.main, 32, tag: 'arm');
+    stroke([b.hip, b.sh], Tone.main, 54, ctrl: b.midPt, tag: 'torso');
+    stroke(b.leg, Tone.main, 38, tag: 'leg');
+    circle(b.hd, 38, Tone.main, tag: 'head');
+    stroke(b.arm, Tone.main, 32, tag: 'arm');
     if (prop != null) prop(this, b.hand, propRot, false);
   }
 }
@@ -340,7 +340,7 @@ class Scene {
 class _DotsShape extends Shape {
   @override
   void paint(Canvas c) {
-    final p = Paint()..color = Ink.dots;
+    final p = Paint()..color = Tone.dots;
     for (double y = 24; y < 880; y += 48) {
       for (double x = 24; x < 1920; x += 48) {
         c.drawCircle(Offset(x, y), 2.5, p);
@@ -355,9 +355,9 @@ class _DotsShape extends Shape {
 
 /// Haltère vu de profil : le disque de face.
 void dumbbell(Scene s, Offset at, double rot, bool far) {
-  s.circle(at, 32, far ? Ink.far : Ink.accent);
-  s.add(_RingShape(at, 22, Ink.ground.withValues(alpha: .3), 4));
-  s.circle(at, 9, Ink.handle);
+  s.circle(at, 32, far ? Tone.far : Tone.accent);
+  s.add(_RingShape(at, 22, Tone.ground.withValues(alpha: .3), 4));
+  s.circle(at, 9, Tone.handle);
 }
 
 class _RingShape extends Shape {
@@ -374,46 +374,46 @@ class _RingShape extends Shape {
 
 /// Haltère tenu vertical contre la poitrine (squat goblet).
 void goblet(Scene s, Offset at, double rot, bool far) {
-  s.rect(-9, -52, 18, 104, Ink.handle, r: 6, origin: at);
-  s.rect(-34, -66, 68, 28, Ink.accent, r: 9, origin: at);
-  s.rect(-34, 38, 68, 28, Ink.accent, r: 9, origin: at);
+  s.rect(-9, -52, 18, 104, Tone.handle, r: 6, origin: at);
+  s.rect(-34, -66, 68, 28, Tone.accent, r: 9, origin: at);
+  s.rect(-34, 38, 68, 28, Tone.accent, r: 9, origin: at);
 }
 
 /// Haltère en prise neutre (curl marteau) : poignée perpendiculaire à l'avant-bras.
 void hammer(Scene s, Offset at, double rot, bool far) {
-  final c = far ? Ink.far : Ink.accent;
-  s.rect(-7, -40, 14, 80, Ink.handle, r: 5, origin: at, rot: rot);
+  final c = far ? Tone.far : Tone.accent;
+  s.rect(-7, -40, 14, 80, Tone.handle, r: 5, origin: at, rot: rot);
   s.rect(-26, -56, 52, 22, c, r: 8, origin: at, rot: rot);
   s.rect(-26, 34, 52, 22, c, r: 8, origin: at, rot: rot);
 }
 
 /// Haltère vu de face, paume vers l'avant (développé militaire).
 void dbFront(Scene s, Offset at, double rot, bool far) {
-  s.rect(-40, -7, 80, 14, Ink.handle, r: 5, origin: at);
-  s.rect(-54, -30, 20, 60, Ink.accent, r: 6, origin: at);
-  s.rect(34, -30, 20, 60, Ink.accent, r: 6, origin: at);
+  s.rect(-40, -7, 80, 14, Tone.handle, r: 5, origin: at);
+  s.rect(-54, -30, 20, 60, Tone.accent, r: 6, origin: at);
+  s.rect(34, -30, 20, 60, Tone.accent, r: 6, origin: at);
 }
 
 /// La silhouette vue de face (élévations latérales, développé militaire, oiseau).
-void frontBody(Scene s, double cx, {Color torso = Ink.main, double shY = 404, double hipY = 560, double headY = 318, bool headLast = false}) {
-  s.ellipse(Offset(cx, 878), 150, 14, Ink.shade);
-  s.stroke([Offset(cx - 34, hipY), Offset(cx - 40, 858), Offset(cx - 82, 858)], Ink.main, 38);
-  s.stroke([Offset(cx + 34, hipY), Offset(cx + 40, 858), Offset(cx + 82, 858)], Ink.main, 38);
+void frontBody(Scene s, double cx, {Color torso = Tone.main, double shY = 404, double hipY = 560, double headY = 318, bool headLast = false}) {
+  s.ellipse(Offset(cx, 878), 150, 14, Tone.shade);
+  s.stroke([Offset(cx - 34, hipY), Offset(cx - 40, 858), Offset(cx - 82, 858)], Tone.main, 38);
+  s.stroke([Offset(cx + 34, hipY), Offset(cx + 40, 858), Offset(cx + 82, 858)], Tone.main, 38);
   s.polygon([Offset(cx - 52, shY), Offset(cx + 52, shY), Offset(cx + 36, hipY), Offset(cx - 36, hipY)], torso, strokeW: 30);
-  if (!headLast) s.circle(Offset(cx, headY), 40, Ink.main, tag: 'head');
+  if (!headLast) s.circle(Offset(cx, headY), 40, Tone.main, tag: 'head');
 }
 
 /// Un banc ou une chaise vu de profil.
 void bench(Scene s, double x0, double x1, double top) {
-  s.rect(x0 + 30, top + 20, 22, 868 - top - 20, Ink.wood);
-  s.rect(x1 - 52, top + 20, 22, 868 - top - 20, Ink.wood);
-  s.rect(x0, top, x1 - x0, 34, Ink.wood, r: 10);
-  s.rect(x0 + 6, top, x1 - x0 - 12, 12, Ink.pad, r: 6);
+  s.rect(x0 + 30, top + 20, 22, 868 - top - 20, Tone.wood);
+  s.rect(x1 - 52, top + 20, 22, 868 - top - 20, Tone.wood);
+  s.rect(x0, top, x1 - x0, 34, Tone.wood, r: 10);
+  s.rect(x0 + 6, top, x1 - x0 - 12, 12, Tone.pad, r: 6);
 }
 
 void chair(Scene s, double x0, double x1, double top) {
-  s.rect(x0, top - 210, 26, 868 - top + 210, Ink.wood, r: 8);
-  s.rect(x1 - 30, top, 24, 868 - top, Ink.wood);
-  s.rect(x0, top, x1 - x0, 30, Ink.wood, r: 8);
-  s.rect(x0 + 6, top, x1 - x0 - 12, 10, Ink.pad, r: 5);
+  s.rect(x0, top - 210, 26, 868 - top + 210, Tone.wood, r: 8);
+  s.rect(x1 - 30, top, 24, 868 - top, Tone.wood);
+  s.rect(x0, top, x1 - x0, 30, Tone.wood, r: 8);
+  s.rect(x0 + 6, top, x1 - x0 - 12, 10, Tone.pad, r: 5);
 }

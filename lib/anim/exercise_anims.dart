@@ -27,7 +27,7 @@ void _moulinets(Scene s, double t) {
   final b = computeBody(Pose(hip: const Offset(1330, 560), torso: -90, neck: 4, thigh: 90, shin: 90, foot: 0, fthigh: 92, fshin: 90, ffoot: 0, up: a, fore: a, fup: a - 14, ffore: a - 14));
   // le cercle que décrit la main
   final orbit = <Offset>[for (var i = 0; i <= 72; i++) at(b.sh, i * 5.0, 212)];
-  s.stroke(orbit, Ink.accent, 5, dash: [4, 20], opacity: .55 * clamp01((t - .4) / .5));
+  s.stroke(orbit, Tone.accent, 5, dash: [4, 20], opacity: .55 * clamp01((t - .4) / .5));
   s.figure(b);
   s.zone(b.sh, t, 44, 44);
 }
@@ -117,7 +117,7 @@ void _militaire(Scene s, double t) {
     final h = Offset(cx + side * lerp(172, 84, p), lerp(300, 204, p));
     final a = ik(sh, h, L.up, L.fore, side > 0 ? 'fwd' : 'back');
     final e = at(sh, a.up, L.up);
-    s.stroke([sh, e, h], Ink.main, 30, tag: 'arm');
+    s.stroke([sh, e, h], Tone.main, 30, tag: 'arm');
     dbFront(s, h, 0, false);
   }
   s.zone(const Offset(cx - 64, 410), t, 42, 42);
@@ -143,7 +143,7 @@ void _planche(Scene s, double t) {
   final hip = at(sh, a + 180, L.torso), body = a + 180 + breath * .25;
   final b = computeBody(Pose(hip: hip, torso: a - breath * .25, neck: -6, thigh: body, shin: body, foot: 74,
       up: 90, fore: 0, fup: 90, ffore: -2, fthigh: body - .6, fshin: body - .6, ffoot: 76));
-  s.stroke(const [Offset(995, 753), Offset(1590, 648)], Ink.accent, 6, dash: [4, 22], opacity: eo(seg(t, .6, 1.2)) * (.75 + .25 * math.sin(t * 3)));
+  s.stroke(const [Offset(995, 753), Offset(1590, 648)], Tone.accent, 6, dash: [4, 22], opacity: eo(seg(t, .6, 1.2)) * (.75 + .25 * math.sin(t * 3)));
   s.figure(b);
   final g = _ang(b.hip, b.sh);
   s.zone(at(mid(b.hip, b.sh, .42), g + 90, 18), t, 95, 32, g);
@@ -211,7 +211,7 @@ void _frontArms(Scene s, double cx, double shY, double p, double from, double to
     final sh = Offset(cx + side * 58, shY);
     final a = side > 0 ? lerp(from, to, p) : lerp(180 - from, 180 - to, p);
     final e = at(sh, a, L.up), h = at(e, side > 0 ? a + bend : a - bend, L.fore);
-    s.stroke([sh, e, h], Ink.main, 30, tag: 'arm');
+    s.stroke([sh, e, h], Tone.main, 30, tag: 'arm');
     prop(s, h, 0, false);
   }
 }
@@ -269,8 +269,8 @@ void _crunchs(Scene s, double t) {
 
 void _marche(Scene s, double t) {
   s.room();
-  s.rect(1300, 762, 240, 108, Ink.wood, r: 6);
-  s.rect(1300, 762, 240, 14, Ink.pad, r: 6);
+  s.rect(1300, 762, 240, 108, Tone.wood, r: 6);
+  s.rect(1300, 762, 240, 14, Tone.pad, r: 6);
   final p = eio(cycle(t, 2, .2));
   const toe = Offset(1336, 760);
   final foot = lerp(-28, 46, p), ankle = at(toe, foot + 180, L.foot);
@@ -312,35 +312,35 @@ void _jump(Scene s, double t) {
 
 void _ecarte(Scene s, double t) {
   s.room(floor: false);
-  s.rect(1150, 220, 360, 780, Ink.mat, r: 28);
+  s.rect(1150, 220, 360, 780, Tone.mat, r: 28);
   s.add(StrokeShape(const [Offset(1186, 236), Offset(1474, 236), Offset(1494, 256), Offset(1494, 964), Offset(1474, 984), Offset(1186, 984), Offset(1166, 964), Offset(1166, 256), Offset(1186, 236)],
-      Ink.matLit, 4));
-  s.stroke(const [Offset(1300, 610), Offset(1270, 760), Offset(1290, 880)], Ink.main, 40);
-  s.stroke(const [Offset(1360, 610), Offset(1390, 760), Offset(1370, 880)], Ink.main, 40);
-  s.polygon(const [Offset(1270, 400), Offset(1390, 400), Offset(1374, 612), Offset(1286, 612)], Ink.main, strokeW: 34);
-  s.circle(const Offset(1330, 318), 42, Ink.main);
+      Tone.matLit, 4));
+  s.stroke(const [Offset(1300, 610), Offset(1270, 760), Offset(1290, 880)], Tone.main, 40);
+  s.stroke(const [Offset(1360, 610), Offset(1390, 760), Offset(1370, 880)], Tone.main, 40);
+  s.polygon(const [Offset(1270, 400), Offset(1390, 400), Offset(1374, 612), Offset(1286, 612)], Tone.main, strokeW: 34);
+  s.circle(const Offset(1330, 318), 42, Tone.main);
   final p = eio(cycle(t, 2, .2));
   for (final side in [-1.0, 1.0]) {
     final sh = Offset(1330 + side * 66, 420), reach = lerp(34, 205, p);
     final e = Offset(sh.dx + side * reach * .52, sh.dy + lerp(8, 18, p));
     final h = Offset(sh.dx + side * reach, sh.dy + lerp(0, 6, p));
-    s.stroke([sh, e, h], Ink.main, 32);
+    s.stroke([sh, e, h], Tone.main, 32);
     final sc = lerp(1.3, 1, p);
-    s.circle(h, 32 * sc, Ink.accent);
-    s.circle(h, 9 * sc, Ink.handle);
+    s.circle(h, 32 * sc, Tone.accent);
+    s.circle(h, 9 * sc, Tone.handle);
   }
   s.zone(const Offset(1330, 460), t, 100, 50);
 }
 
 void _oiseau(Scene s, double t) {
   s.room();
-  s.ellipse(const Offset(1330, 878), 150, 14, Ink.shade);
-  s.stroke(const [Offset(1300, 590), Offset(1282, 730), Offset(1292, 858), Offset(1250, 858)], Ink.main, 38);
-  s.stroke(const [Offset(1360, 590), Offset(1378, 730), Offset(1368, 858), Offset(1410, 858)], Ink.main, 38);
-  s.polygon(const [Offset(1262, 512), Offset(1398, 512), Offset(1372, 596), Offset(1288, 596)], Ink.far, strokeW: 30);
+  s.ellipse(const Offset(1330, 878), 150, 14, Tone.shade);
+  s.stroke(const [Offset(1300, 590), Offset(1282, 730), Offset(1292, 858), Offset(1250, 858)], Tone.main, 38);
+  s.stroke(const [Offset(1360, 590), Offset(1378, 730), Offset(1368, 858), Offset(1410, 858)], Tone.main, 38);
+  s.polygon(const [Offset(1262, 512), Offset(1398, 512), Offset(1372, 596), Offset(1288, 596)], Tone.far, strokeW: 30);
   final p = eio(cycle(t, 2, .2));
   _frontArms(s, 1330, 520, p, 84, -2, 10, dumbbell);
-  s.circle(const Offset(1330, 488), 40, Ink.main, tag: 'head');
+  s.circle(const Offset(1330, 488), 40, Tone.main, tag: 'head');
   s.zone(const Offset(1330, 548), t, 120, 36);
   s.arrow(const Offset(1690, 400), t, 2, rise: true);
 }
@@ -425,9 +425,9 @@ void _chat(Scene s, double t) {
 void _pecs(Scene s, double t) {
   s.room();
   const door = 1200.0;
-  s.rect(1120, 70, 260, 34, Ink.wood, r: 6);
-  s.rect(1180, 70, 40, 810, Ink.wood);
-  s.rect(1212, 104, 8, 776, Ink.pad);
+  s.rect(1120, 70, 260, 34, Tone.wood, r: 6);
+  s.rect(1180, 70, 40, 810, Tone.wood);
+  s.rect(1212, 104, 8, 776, Tone.pad);
   final p = hold(t);
   final hip = Offset(lerp(door + 8, door + 70, p), 600), torso = lerp(-90, -82, p);
   final front = ik(hip, const Offset(door + 130, 858), L.thigh, L.shin, 'fwd');
@@ -441,8 +441,8 @@ void _pecs(Scene s, double t) {
   s.zone(at(mid(hip, b.sh, .8), torso + 90, 18), t, 56, 34, torso);
   final op = .9 * clamp01((t - .3) / .4) * (1 - .6 * clamp01((t - 1.5) / .4));
   final x = 1500 + 40 * math.min(1.0, p);
-  s.stroke([Offset(x - 40, 430), Offset(x + 40, 430)], Ink.accent, 10, opacity: op);
-  s.stroke([Offset(x + 16, 406), Offset(x + 40, 430), Offset(x + 16, 454)], Ink.accent, 10, opacity: op);
+  s.stroke([Offset(x - 40, 430), Offset(x + 40, 430)], Tone.accent, 10, opacity: op);
+  s.stroke([Offset(x + 16, 406), Offset(x + 40, 430), Offset(x + 16, 454)], Tone.accent, 10, opacity: op);
 }
 
 void _psoas(Scene s, double t) {
@@ -487,8 +487,8 @@ void _marteau(Scene s, double t) {
 
 void _chaise(Scene s, double t) {
   s.room();
-  s.rect(1100, 96, 56, 784, Ink.wood);
-  s.rect(1148, 96, 8, 784, Ink.pad);
+  s.rect(1100, 96, 56, 784, Tone.wood);
+  s.rect(1148, 96, 8, 784, Tone.pad);
   final p = hold(t), m = math.min(1.0, p);
   final hip = Offset(1186, lerp(612, 712, m));
   final leg = ik(hip, const Offset(1340, 858), L.thigh, L.shin, 'fwd');
