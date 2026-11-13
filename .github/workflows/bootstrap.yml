@@ -41,7 +41,7 @@ jobs:
           flutter create --org com.devchris06 --project-name fit_home --platforms android .
           flutter pub add shared_preferences http package_info_plus url_launcher wakelock_plus
           flutter pub add --dev flutter_lints
-          flutter --version --machine > docs/flutter-version.json
+          mkdir -p docs && flutter --version --machine > docs/flutter-version.json
 
       - name: Enregistrer dans le dépôt
         if: steps.check.outputs.need == 'true'
