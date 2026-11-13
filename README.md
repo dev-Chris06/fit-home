@@ -31,5 +31,5 @@ L'app peut aussi vérifier toute seule au démarrage (une fois par jour, seuleme
 
 - Code : `lib/` (voir [DOCUMENTATION.md](DOCUMENTATION.md) pour l'architecture et le journal de construction).
 - Les APK sont construits par **GitHub Actions** (`.github/workflows/`), pas besoin de compiler sur son PC.
-- Publier une version : mettre à jour `CHANGELOG.md`, puis envoyer un tag `vX.Y.Z` → le workflow `release` publie l'APK.
+- Publier une version : changer `version:` dans `pubspec.yaml`, ajouter la section correspondante dans `CHANGELOG.md`, envoyer sur `main` → le workflow `release` publie l'APK.
 - Tests : `flutter test` (logique des séances, paliers, versions, et vérification des 32 animations).

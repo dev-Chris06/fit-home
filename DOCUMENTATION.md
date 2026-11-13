@@ -114,9 +114,9 @@ si elle est perdue, il faudra désinstaller l'app pour installer les versions su
 | --- | --- | --- |
 | `bootstrap.yml` | Une seule fois, au premier envoi | `flutter create` génère le dossier `android/`, `flutter pub add` ajoute les dépendances |
 | `ci.yml` | À chaque envoi sur `main` | Analyse, tests, APK de contrôle (dans l'onglet Actions) |
-| `release.yml` | Quand on envoie un tag `vX.Y.Z` | Tests, APK signé, release GitHub avec `fit-home.apk` et les notes du `CHANGELOG.md` |
+| `release.yml` | À chaque envoi sur `main` | Si la version de `pubspec.yaml` n'est pas encore publiée : tests, APK signé, release GitHub avec `fit-home.apk` et les notes du `CHANGELOG.md` |
 
-Le numéro de build Android (`versionCode`) est calculé à partir de l'heure : il augmente toujours, condition pour qu'Android accepte la mise à jour.
+Le tag `vX.Y.Z` est créé par le workflow lui-même. Le numéro de build Android (`versionCode`) est calculé à partir de l'heure : il augmente toujours, condition pour qu'Android accepte la mise à jour.
 
 ### Étape 5 — Compilation, corrections et publication
 
@@ -128,6 +128,7 @@ La CI utilise **Flutter 3.50.0** (Dart 3.14). Voici les problèmes rencontrés e
 | `ambiguous_import` sur `Ink` | Notre classe de couleurs s'appelait `Ink`, comme un widget de Flutter | Renommée `Tone` (même problème que `Step` → `PlanStep` à l'étape 1) |
 | La construction de l'APK plante dans `lintVitalAnalyzeRelease` | Bug de l'outil d'analyse Android sur le code du plugin `url_launcher_android` | Tâches `lintVital*` désactivées dans `android/build.gradle.kts` (nos tests Dart restent actifs) |
 | Avertissement sur `setMockInitialValues` | Une fonction réservée aux tests utilisée hors du dossier `test/` | Dossier `screenshots/` exclu de l'analyse |
+| L'envoi d'un tag `v1.0.0` est refusé | L'environnement de travail n'a pas le droit de créer des tags sur GitHub | La release se déclenche désormais quand la version de `pubspec.yaml` change ; c'est le workflow qui crée le tag |
 | Impossible de télécharger les captures depuis l'onglet Actions | Le stockage des « artifacts » n'est pas accessible depuis l'environnement de travail | La CI publie aussi les captures sur une branche `captures` |
 
 **Les avertissements « material.dart is deprecated »** : depuis Flutter 3.47, la bibliothèque Material est déplacée dans un
@@ -143,7 +144,8 @@ principaux et les 32 animations avec des tests Flutter (`matchesGoldenFile` + `-
 
 ## Publier une nouvelle version (mode d'emploi)
 
-1. Modifier le code, envoyer sur `main`, attendre que le workflow `ci` soit vert.
-2. Ajouter en haut de `CHANGELOG.md` une section `## 1.0.1` avec les nouveautés.
-3. Créer et envoyer le tag : `git tag v1.0.1 && git push origin v1.0.1`.
-4. Le workflow `release` publie `fit-home.apk`. Dans l'app, « Rechercher une mise à jour » la propose aussitôt.
+1. Modifier le code.
+2. Dans `pubspec.yaml`, changer la version : `version: 1.0.1+1`.
+3. Ajouter en haut de `CHANGELOG.md` une section `## 1.0.1` avec les nouveautés.
+4. Envoyer sur `main`. Le workflow `release` voit que la 1.0.1 n'existe pas encore, construit et publie `fit-home.apk`.
+   Dans l'app, « Rechercher une mise à jour » la propose aussitôt.

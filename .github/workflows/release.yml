@@ -1,14 +1,21 @@
-# Publication d'une version : se déclenche quand un tag « vX.Y.Z » est envoyé.
-# Construit l'APK signé, puis crée la « release » GitHub avec le fichier fit-home.apk.
+# Publication automatique d'une version.
+# À chaque envoi sur main, ce workflow lit la version dans pubspec.yaml (ex. « version: 1.0.1+1 » → 1.0.1).
+# Si aucune release v1.0.1 n'existe encore, il construit l'APK signé et crée la release GitHub avec fit-home.apk
+# et les notes de la section « ## 1.0.1 » du CHANGELOG.md. Sinon, il ne fait rien.
 # C'est cette release que l'app consulte quand on appuie sur « Rechercher une mise à jour ».
 name: release
 
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -16,22 +23,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cette version est-elle déjà publiée ?
+        id: v
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(grep -E '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*//; s/\+.*//')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo "La version $VERSION est déjà publiée : rien à faire."
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Nouvelle version à publier : $VERSION"
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/setup-java@v4
+        if: steps.v.outputs.publish == 'true'
         with:
           distribution: temurin
           java-version: '17'
 
       - uses: subosito/flutter-action@v2
+        if: steps.v.outputs.publish == 'true'
         with:
           channel: stable
           cache: true
 
       - name: Dépendances et tests
+        if: steps.v.outputs.publish == 'true'
         run: |
           flutter pub get
           flutter test
 
       - name: Clé de signature
+        if: steps.v.outputs.publish == 'true'
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -43,21 +69,25 @@ jobs:
           printf "storePassword=%s\nkeyPassword=%s\nkeyAlias=%s\nstoreFile=upload-keystore.jks\n" "$KEYSTORE_PASSWORD" "$KEY_PASSWORD" "$KEY_ALIAS" > android/key.properties
 
       - name: Construire l'APK signé
+        if: steps.v.outputs.publish == 'true'
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
           # build-number : toujours croissant pour qu'Android accepte la mise à jour par-dessus l'ancienne version.
           BUILD=$(( $(date +%s) / 60 ))
-          flutter build apk --release --build-name="$VERSION" --build-number="$BUILD"
+          flutter build apk --release --build-name="${{ steps.v.outputs.version }}" --build-number="$BUILD"
           cp build/app/outputs/flutter-apk/app-release.apk fit-home.apk
 
       - name: Notes de version (depuis CHANGELOG.md)
+        if: steps.v.outputs.publish == 'true'
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          awk -v v="## $VERSION" 'index($0, v)==1 {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
+          VERSION="${{ steps.v.outputs.version }}"
+          awk -v v="## $VERSION" '$0 == v {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
           if [ ! -s notes.md ]; then echo "Version $VERSION de Fit Home." > notes.md; fi
           cat notes.md
 
       - name: Publier la release
+        if: steps.v.outputs.publish == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "$GITHUB_REF_NAME" fit-home.apk --title "Fit Home ${GITHUB_REF_NAME#v}" --notes-file notes.md --latest
+        run: |
+          VERSION="${{ steps.v.outputs.version }}"
+          gh release create "v$VERSION" fit-home.apk --target "$GITHUB_SHA" --title "Fit Home $VERSION" --notes-file notes.md --latest
