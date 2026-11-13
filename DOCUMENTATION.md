@@ -138,7 +138,11 @@ paquet séparé (`material_ui`). Ce ne sont que des informations, le code foncti
 principaux et les 32 animations avec des tests Flutter (`matchesGoldenFile` + `--update-goldens`). On les retrouve sur la branche
 `captures` du dépôt. C'est ainsi que l'interface a été vérifiée à l'œil avant la publication.
 
-**Résultat** : 45 tests verts (logique, 32 animations sans membre sous le sol, démarrage de l'app), APK signé, release `v1.0.0`.
+**Résultat** : 45 tests verts (logique, 32 animations sans membre sous le sol, démarrage de l'app), APK signé, release `v1.0.0` publiée
+(`fit-home.apk`, environ 54 Mo).
+
+**Piste pour une prochaine version** : l'APK est « universel » (il contient le code pour tous les processeurs Android, d'où sa taille).
+On pourra publier des APK séparés par processeur (`--split-per-abi`, environ 20 Mo chacun) pour économiser les données mobiles.
 
 ---
 
