@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -54,6 +56,18 @@ jobs:
           name: captures
           path: screenshots/captures/
           retention-days: 7
+
+      - name: Publier les captures sur la branche « captures »
+        if: steps.check.outputs.ready == 'true' && github.event_name == 'push'
+        continue-on-error: true
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd screenshots/captures
+          git init -q -b captures
+          git add .
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "Captures de contrôle (${GITHUB_SHA::7})"
+          git push -fq "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" captures
 
       - name: Clé de signature (si configurée)
         if: steps.check.outputs.ready == 'true'
