@@ -102,12 +102,12 @@ class HomeScreen extends StatelessWidget {
             Panel(
               onTap: onOpenJournal,
               child: const Row(children: [
-                Icon(Icons.edit_note, color: Palette.main),
+                Icon(Icons.insights, color: Palette.main),
                 SizedBox(width: 12),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Noter une séance faite', style: TextStyle(fontWeight: FontWeight.w700)),
-                    Text('Ouvre le journal', style: TextStyle(color: Palette.muted, fontSize: 13)),
+                    Text('Mes progrès', style: TextStyle(fontWeight: FontWeight.w700)),
+                    Text('Historique des séances et palier', style: TextStyle(color: Palette.muted, fontSize: 13)),
                   ]),
                 ),
                 Icon(Icons.chevron_right, color: Palette.muted),

@@ -68,7 +68,7 @@ class AdviceBanner extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(up
-                ? 'Tes 3 dernières séances sont réussies proprement : tu peux passer au palier ${palier + 1}. Change-le dans le Journal quand tu te sens prêt.'
+                ? 'Tes 3 dernières séances sont réussies proprement : tu peux passer au palier ${palier + 1}. Change-le dans Progrès quand tu te sens prêt.'
                 : 'Deux séances dures de suite : allège un peu la charge ou fais 2 séries au lieu de 3 la prochaine fois.'),
           ),
         ],

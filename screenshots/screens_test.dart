@@ -73,6 +73,30 @@ void main() {
     await shoot(tester, _wrap(const GuidedSessionScreen(session: sessionC)), '04-seance-guidee');
   });
 
+  testWidgets('séries, repos et fin de séance', (tester) async {
+    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
+    await app.load();
+    await phone(tester);
+    await tester.pumpWidget(_wrap(const GuidedSessionScreen(session: sessionA)));
+    await tester.pump(const Duration(milliseconds: 300));
+    for (var i = 0; i < 3; i++) {
+      await tester.tap(find.text('Passer'));
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+    await tester.pump(const Duration(milliseconds: 1000));
+    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/08-serie.png'));
+    await tester.tap(find.text('Série terminée'));
+    await tester.pump(const Duration(milliseconds: 1000));
+    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/09-repos.png'));
+    for (var i = 0; i < 80 && find.text('Terminer').evaluate().isEmpty; i++) {
+      final skip = find.textContaining('Exercice suivant (');
+      await tester.tap(skip.evaluate().isNotEmpty ? skip : find.textContaining('Passer'));
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    await tester.pump(const Duration(milliseconds: 300));
+    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/10-fin.png'));
+  });
+
   testWidgets('journal et plus', (tester) async {
     SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
     await app.load();
@@ -80,9 +104,9 @@ void main() {
     await phone(tester);
     await tester.pumpWidget(const FitHomeApp());
     await tester.pump(const Duration(milliseconds: 300));
-    await tester.tap(find.text('Journal'));
+    await tester.tap(find.text('Progrès'));
     await tester.pump(const Duration(milliseconds: 600));
-    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/05-journal.png'));
+    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/05-progres.png'));
     await tester.tap(find.text('Plus'));
     await tester.pump(const Duration(milliseconds: 600));
     await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/06-plus.png'));

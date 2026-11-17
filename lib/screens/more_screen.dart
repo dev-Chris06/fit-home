@@ -98,10 +98,6 @@ class _MoreScreenState extends State<MoreScreen> {
               ),
             ]),
           ),
-          const SizedBox(height: 20),
-          const Center(
-            child: Text('Fit Home · fait avec Flutter par dev-Chris06', style: TextStyle(color: Palette.muted, fontSize: 12)),
-          ),
         ],
       ),
     );

@@ -11,7 +11,11 @@ class PlanStep {
   final String detail; // « Série 2/3 · 10 à 15 répétitions »
   final int? seconds; // null = l'utilisateur appuie sur « Terminé »
   final String phase; // « Échauffement », « Tour 2/3 »…
-  const PlanStep(this.kind, this.exerciseId, this.title, this.detail, this.seconds, this.phase);
+  // Pour un effort : sa série (set sur sets). Pour un repos : la série qui suit.
+  final int set;
+  final int sets;
+  final int item; // numéro de l'exercice dans la séance : sert au bouton « Exercice suivant »
+  const PlanStep(this.kind, this.exerciseId, this.title, this.detail, this.seconds, this.phase, {this.set = 1, this.sets = 1, this.item = 0});
 }
 
 /// Les exercices réellement faits pour une séance, après les alternances et le palier.
@@ -36,9 +40,10 @@ List<PlanStep> buildPlan(SessionDef s, {required int palier, required int doneCo
   final steps = <PlanStep>[];
   final rest = restSeconds(palier);
 
+  var item = 0;
   void addWarmup() {
     for (final it in warmup.items) {
-      steps.add(PlanStep(StepKind.work, it.exerciseId, it.exercise.name, it.reps, it.seconds, 'Échauffement'));
+      steps.add(PlanStep(StepKind.work, it.exerciseId, it.exercise.name, it.reps, it.seconds, 'Échauffement', item: item++));
     }
   }
 
@@ -50,13 +55,14 @@ List<PlanStep> buildPlan(SessionDef s, {required int palier, required int doneCo
     for (var r = 1; r <= rounds; r++) {
       for (var i = 0; i < items.length; i++) {
         final it = items[i];
-        steps.add(PlanStep(StepKind.work, it.exerciseId, it.exercise.name, 'Effort · ${it.seconds ?? 40} s', it.seconds ?? 40, 'Tour $r/$rounds'));
+        final thisItem = item++;
+        steps.add(PlanStep(StepKind.work, it.exerciseId, it.exercise.name, 'Effort · ${it.seconds ?? 40} s', it.seconds ?? 40, 'Tour $r/$rounds', item: thisItem));
         final lastOfRound = i == items.length - 1;
         final lastOfAll = lastOfRound && r == rounds;
         if (!lastOfAll) {
           final next = lastOfRound ? items.first : items[i + 1];
           steps.add(PlanStep(StepKind.rest, next.exerciseId, lastOfRound ? 'Fin du tour' : 'Repos', lastOfRound ? 'Respire, bois un peu d’eau' : 'Prépare-toi',
-              lastOfRound ? 60 : 20, 'Tour $r/$rounds'));
+              lastOfRound ? 60 : 20, 'Tour $r/$rounds', item: thisItem));
         }
       }
     }
@@ -67,14 +73,16 @@ List<PlanStep> buildPlan(SessionDef s, {required int palier, required int doneCo
   final restBetween = s.kind == SessionKind.posture || s.kind == SessionKind.warmup ? 10 : rest;
   for (var i = 0; i < items.length; i++) {
     final it = items[i];
+    final thisItem = item++;
     for (var set = 1; set <= it.sets; set++) {
       final setLabel = it.sets > 1 ? 'Série $set/${it.sets} · ' : '';
-      steps.add(PlanStep(StepKind.work, it.exerciseId, it.exercise.name, '$setLabel${it.reps}', it.seconds, s.title));
+      steps.add(PlanStep(StepKind.work, it.exerciseId, it.exercise.name, '$setLabel${it.reps}', it.seconds, s.title, set: set, sets: it.sets, item: thisItem));
       final lastSet = set == it.sets;
       final lastItem = i == items.length - 1;
       if (!(lastSet && lastItem)) {
-        final nextId = lastSet ? items[i + 1].exerciseId : it.exerciseId;
-        steps.add(PlanStep(StepKind.rest, nextId, 'Repos', lastSet ? 'Exercice suivant' : 'Série suivante', restBetween, s.title));
+        final next = lastSet ? items[i + 1] : it;
+        steps.add(PlanStep(StepKind.rest, next.exerciseId, 'Repos', lastSet ? 'Exercice suivant' : 'Série suivante', restBetween, s.title,
+            set: lastSet ? 1 : set + 1, sets: next.sets, item: thisItem));
       }
     }
   }
@@ -85,4 +93,14 @@ List<PlanStep> buildPlan(SessionDef s, {required int palier, required int doneCo
 int estimatedMinutes(List<PlanStep> steps) {
   final secs = steps.fold<int>(0, (a, st) => a + (st.seconds ?? 40));
   return (secs / 60).round();
+}
+
+/// Index de la première étape du prochain exercice (on saute les séries restantes et les repos de l'exercice en cours).
+/// Renvoie steps.length s'il n'y a plus d'exercice : la séance est alors terminée.
+int nextExerciseIndex(List<PlanStep> steps, int from) {
+  final current = steps[from].item;
+  for (var j = from + 1; j < steps.length; j++) {
+    if (steps[j].kind == StepKind.work && steps[j].item != current) return j;
+  }
+  return steps.length;
 }

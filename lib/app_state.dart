@@ -30,6 +30,18 @@ class JournalEntry {
     required this.createdAt,
   });
 
+  JournalEntry copyWith({String? charge, String? ressenti, bool? reussi, String? notes}) => JournalEntry(
+        id: id,
+        date: date,
+        type: type,
+        charge: charge ?? this.charge,
+        ressenti: ressenti ?? this.ressenti,
+        reussi: reussi ?? this.reussi,
+        notes: notes ?? this.notes,
+        palier: palier,
+        createdAt: createdAt,
+      );
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'date': date,
@@ -128,6 +140,13 @@ class AppState extends ChangeNotifier {
 
   Future<void> addEntry(JournalEntry e) async {
     entries = [...entries, e];
+    notifyListeners();
+    await _saveEntries();
+  }
+
+  /// Remplace une séance déjà notée (même id) : sert aux réponses rapides de fin de séance.
+  Future<void> updateEntry(JournalEntry e) async {
+    entries = [for (final x in entries) x.id == e.id ? e : x];
     notifyListeners();
     await _saveEntries();
   }

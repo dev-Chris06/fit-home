@@ -1,4 +1,4 @@
-// Le journal : toutes les séances notées, le palier actuel et le conseil de progression.
+// L'onglet Progrès : toutes les séances faites, le palier actuel et le conseil de progression.
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
@@ -31,7 +31,7 @@ class JournalScreen extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.add),
-        label: const Text('Noter une séance'),
+        label: const Text('Ajouter une séance'),
         onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const LogFormScreen())),
       ),
       body: ListenableBuilder(
@@ -41,8 +41,12 @@ class JournalScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 96),
             children: [
-              const Text('Journal', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 12),
+              const Text('Progrès', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 4),
+              const Text('Chaque séance terminée s’enregistre ici toute seule. C’est grâce à cet historique que l’app choisit ta prochaine séance '
+                  '(A → B → C), alterne les variantes et te dit quand passer au palier suivant.',
+                  style: TextStyle(color: Palette.muted, height: 1.35)),
+              const SizedBox(height: 14),
               Row(children: [
                 StatTile('${app.entries.length}', 'séances notées'),
                 const SizedBox(width: 10),
@@ -76,8 +80,8 @@ class JournalScreen extends StatelessWidget {
               if (list.isEmpty)
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text('Aucune séance notée pour l’instant. Lance la séance A depuis l’accueil, '
-                      'ou note une séance faite avec le bouton en bas.', style: TextStyle(color: Palette.muted)),
+                  child: Text('Aucune séance pour l’instant. Lance la séance A depuis l’accueil : elle s’enregistrera ici à la fin. '
+                      'Une séance faite sans l’app ? Ajoute-la avec le bouton en bas.', style: TextStyle(color: Palette.muted)),
                 ),
               for (final e in list) ...[
                 Panel(

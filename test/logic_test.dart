@@ -57,6 +57,26 @@ void main() {
     });
   });
 
+  group('séries et exercice suivant', () {
+    test('chaque effort connaît sa série', () {
+      final steps = buildPlan(sessionA, palier: 1, doneCount: 0, withWarmup: false);
+      final squat = steps.where((s) => s.kind == StepKind.work && s.exerciseId == 'squat').toList();
+      expect(squat.map((s) => '${s.set}/${s.sets}').toList(), ['1/3', '2/3', '3/3']);
+      // le repos après la série 1 annonce la série 2 du même exercice
+      expect(steps[1].kind, StepKind.rest);
+      expect('${steps[1].set}/${steps[1].sets}', '2/3');
+      expect(steps[2].item, steps[0].item);
+    });
+    test('« Exercice suivant » saute les séries restantes', () {
+      final steps = buildPlan(sessionA, palier: 1, doneCount: 0, withWarmup: false);
+      final j = nextExerciseIndex(steps, 0); // depuis la série 1 du squat
+      expect(steps[j].exerciseId, 'pompes');
+      expect(steps[j].set, 1);
+      expect(nextExerciseIndex(steps, 1), j); // depuis le repos entre deux séries
+      expect(nextExerciseIndex(steps, steps.length - 1), steps.length); // dernier exercice : fin de séance
+    });
+  });
+
   group('versions', () {
     test('comparaison', () {
       expect(isNewer('1.0.10', '1.0.9'), isTrue);
