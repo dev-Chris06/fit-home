@@ -144,6 +144,20 @@ principaux et les 32 animations avec des tests Flutter (`matchesGoldenFile` + `-
 **Piste pour une prochaine version** : l'APK est « universel » (il contient le code pour tous les processeurs Android, d'où sa taille).
 On pourra publier des APK séparés par processeur (`--split-per-abi`, environ 20 Mo chacun) pour économiser les données mobiles.
 
+### Version 1.0.1 — Retours après les premiers essais
+
+| Retour | Ce qui se passait | Correction |
+| --- | --- | --- |
+| « Quand je passe le repos, ça revient en arrière » | Chaque exercice compte 3 séries : après le repos, l'app réaffichait le même exercice pour la série 2, ce qui ressemblait à un retour en arrière | Points « Série 2 sur 3 » à l'écran, repos qui annonce « avant la série 2 sur 3 du même exercice », bouton « Exercice suivant » |
+| « À quoi sert la page Journal ? » | Il fallait penser à noter la séance, sinon la rotation A → B → C n'avançait pas | Enregistrement automatique en fin de séance + deux questions rapides ; onglet renommé « Progrès » avec une explication |
+| Mention « fait avec Flutter par dev-Chris06 » | Jugée peu professionnelle | Retirée |
+
+**Comment c'est fait**
+- Chaque `PlanStep` connaît maintenant sa série (`set`, `sets`) et son exercice (`item`). Pour un repos, `set` désigne la série qui suit.
+- `nextExerciseIndex()` cherche la première étape d'effort dont l'`item` change : c'est le bouton « Exercice suivant ». Testé dans `logic_test.dart`.
+- À la fin de la séance, `_autoSave()` crée l'entrée avec des valeurs par défaut (ressenti « correct », séries non cochées) ;
+  chaque réponse rapide appelle `app.updateEntry()` qui remplace l'entrée par sa copie modifiée (`copyWith`).
+
 ---
 
 ## Publier une nouvelle version (mode d'emploi)

@@ -44,7 +44,7 @@ class JournalScreen extends StatelessWidget {
               const Text('Progrès', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
               const SizedBox(height: 4),
               const Text('Chaque séance terminée s’enregistre ici toute seule. C’est grâce à cet historique que l’app choisit ta prochaine séance '
-                  '(A → B → C), alterne les variantes et te dit quand passer au palier suivant.',
+                  '(A, puis B, puis C), alterne les variantes et te dit quand passer au palier suivant.',
                   style: TextStyle(color: Palette.muted, height: 1.35)),
               const SizedBox(height: 14),
               Row(children: [
