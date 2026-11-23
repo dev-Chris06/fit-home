@@ -103,7 +103,7 @@ void main() {
     await app.load();
     await shoot(tester, _wrap(const ReminderScreen(firstTime: true)), '15-rappels');
     await tester.tap(find.text('Certains jours, à heure fixe'));
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pump(const Duration(milliseconds: 800));
     await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/16-rappels-fixe.png'));
   });
 

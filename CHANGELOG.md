@@ -1,5 +1,16 @@
 # Historique des versions
 
+## 1.2.1
+
+- Écran des rappels : textes corrigés (une flèche ne s'affichait pas).
+
+## 1.2.0
+
+- Rappels : au premier lancement, l'app propose de les régler ; on peut les changer à tout moment dans Plus → Rappels.
+- Deux façons d'être rappelé : une relance quand aucune séance n'a été faite depuis 2 à 5 jours (au choix), ou certains jours de la semaine à heure fixe.
+- L'heure du rappel est réglable. Les rappels fonctionnent sans internet et sont recalculés à chaque séance enregistrée.
+- Bouton « Envoyer un rappel d'essai » pour vérifier que le téléphone ne bloque pas les notifications.
+
 ## 1.1.0
 
 - 20 nouveaux exercices animés (52 au total) : gainage latéral, crunch vélo, dead bug, relevé de bassin, position creuse, pont fessier, pont sur une jambe, soulevé de terre jambes tendues, ruade, squat sumo, pompes déclinées, développé Arnold, rowing inversé sous une table, kickback, pull-over, jumping jacks, burpees, talons-fesses, étirement des quadriceps, posture de l'enfant.

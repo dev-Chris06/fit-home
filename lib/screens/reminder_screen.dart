@@ -74,7 +74,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
           ? 'Rappels désactivés.'
           : granted
               ? 'Rappels enregistrés : ${s.summary.toLowerCase()}.'
-              : 'Réglage enregistré, mais les notifications sont bloquées. Active-les dans Réglages → Applications → Fit Home → Notifications.'),
+              : 'Réglage enregistré, mais les notifications sont bloquées. Active-les dans les réglages du téléphone : Applications, puis Fit Home, puis Notifications.'),
     ));
   }
 
@@ -88,7 +88,7 @@ class _ReminderScreenState extends State<ReminderScreen> {
         children: [
           Text(
             widget.firstTime
-                ? 'Choisis comment Fit Home te rappelle de t’entraîner. Tu pourras changer ce réglage à tout moment dans Plus → Rappels.'
+                ? 'Choisis comment Fit Home te rappelle de t’entraîner. Tu pourras changer ce réglage à tout moment dans l’onglet Plus, rubrique Rappels.'
                 : 'Les rappels arrivent même sans internet.',
             style: const TextStyle(color: Palette.muted),
           ),

@@ -3,7 +3,7 @@ description: "Fit Home — programme sportif à la maison, 100 % hors ligne."
 publish_to: 'none'
 
 # La version affichée dans l'app. Le workflow de release la remplace par celle du tag (v1.2.3 → 1.2.3).
-version: 1.2.0+4
+version: 1.2.1+5
 
 environment:
   sdk: ">=3.4.0 <4.0.0"

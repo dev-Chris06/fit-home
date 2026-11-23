@@ -26,7 +26,7 @@ L'app peut aussi vérifier toute seule au démarrage (une fois par jour, seuleme
 | Exercices | La bibliothèque des 52 exercices, filtrable par famille et par palier |
 | Séance guidée | Enchaîne échauffement, séries et repos avec un minuteur ; l'écran reste allumé |
 | Progrès | Les séances notées, le palier actuel et le conseil pour monter de palier |
-| Plus | Paliers, alimentation, conseils de sécurité, mises à jour |
+| Plus | Paliers, rappels, alimentation, conseils de sécurité, mises à jour |
 
 ## Pour les développeurs
 

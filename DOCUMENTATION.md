@@ -190,6 +190,37 @@ et les captures 13 et 14 montrent les 20 nouvelles en grand à deux instants.
 | Filtres de la bibliothèque trop larges pour l'écran (débordement de 16 px) | Filtres sur plusieurs lignes (`Wrap`) |
 | Le symbole ⇄ ne s'affichait pas avec la police de l'app | Remplacé par l'icône Material `swap_horiz` |
 
+### Version 1.2 — Les rappels
+
+Choix faits par QCM : un rappel que l'on règle soi-même au premier lancement et que l'on peut changer à tout moment,
+délai de relance réglable (2 à 5 jours), heure réglable, rappels activés avec demande d'autorisation.
+
+**Les deux modes** (`lib/data/reminders.dart`, fonctions pures testées dans `logic_test.dart`)
+- *Relance* : une notification le jour « dernière séance + N jours » à l'heure choisie, puis deux relances 2 et 4 jours plus tard.
+  Si cette date est déjà passée, le rappel arrive à la prochaine occurrence de l'heure choisie. Sans aucune séance, on compte à partir d'aujourd'hui.
+- *Jours fixes* : chaque jour coché des 4 prochaines semaines, sauf un jour où une séance est déjà notée.
+- Tout est recalculé au lancement de l'app, à chaque séance enregistrée ou supprimée, et à chaque changement de réglage
+  (`app.onScheduleChange`, branché sur `Reminders.reschedule` dans `main.dart`).
+
+**L'envoi** (`lib/services/reminder_service.dart`) : `flutter_local_notifications` programme les notifications dans Android.
+- Mode « inexact » : Android peut décaler de quelques minutes pour économiser la batterie, mais aucune permission d'alarme exacte n'est demandée.
+- L'heure locale est convertie en instant UTC (`TZDateTime.from(..., tz.UTC)`) : pas besoin de connaître le fuseau du téléphone.
+- Après un redémarrage du téléphone, le plugin reprogramme les rappels (récepteur `BOOT_COMPLETED` dans le manifeste).
+- Toutes les fonctions avalent leurs erreurs : un rappel raté ne doit jamais bloquer l'app (et dans les tests, il n'y a pas de notifications).
+
+**Côté Android** : permissions `POST_NOTIFICATIONS` et `RECEIVE_BOOT_COMPLETED`, deux récepteurs du plugin, `compileSdk` 37 au minimum
+et le *desugaring* (`desugar_jdk_libs`) exigés par le plugin.
+
+**Les écrans** : `ReminderScreen` (premier lancement avec « Continuer », puis Plus → Rappels avec « Enregistrer » et un rappel d'essai).
+Un encadré explique que l'économie de batterie de certaines marques peut bloquer les rappels.
+
+| Problème rencontré | Correction |
+| --- | --- |
+| pub.dev inaccessible depuis l'environnement de travail | API du plugin lue directement dans son dépôt GitHub (version 23, paramètres nommés) |
+| Test du premier lancement : bouton « Continuer » introuvable | Il était sous le bas de l'écran ; il est maintenant fixé en bas, toujours visible |
+| Construction de l'APK en CI : erreur 429 de Maven (trop de requêtes) | Erreur passagère du serveur ; la publication, lancée en parallèle, a réussi |
+| La flèche « → » ne s'affichait pas dans l'écran des rappels | Textes reformulés sans flèche (version 1.2.1) |
+
 ---
 
 ## Publier une nouvelle version (mode d'emploi)
