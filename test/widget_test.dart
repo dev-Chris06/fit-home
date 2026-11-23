@@ -1,6 +1,7 @@
 // Test de fumée : l'app démarre et affiche l'accueil avec la séance A proposée.
 import 'package:fit_home/app_state.dart';
 import 'package:fit_home/main.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +16,9 @@ void main() {
   });
 
   testWidgets('premier lancement : le réglage des rappels s’ouvre', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
     SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
     await app.load();
     await tester.pumpWidget(const FitHomeApp());
