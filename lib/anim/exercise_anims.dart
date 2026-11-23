@@ -894,8 +894,9 @@ void _enfant(Scene s, double t) {
   final sh = at(hip, torso, L.torso);
   final start = at(at(sh, 92, L.up), 90, L.fore);
   final hand = Offset.lerp(start, const Offset(1585, 850), k)!;
-  final arm = ik(sh, hand, L.up, L.fore, 'down');
-  final far = ik(sh, hand - const Offset(10, 2), L.up, L.fore, 'down');
+  // Coude plié vers le haut : bras presque tendu, il ne passe jamais sous le sol.
+  final arm = ik(sh, hand, L.up, L.fore, k < .5 ? 'down' : 'up');
+  final far = ik(sh, hand - const Offset(10, 2), L.up, L.fore, k < .5 ? 'down' : 'up');
   final b = computeBody(Pose(hip: hip, torso: torso, neck: lerp(4, 10, k), thigh: th, shin: 180, foot: 180, fthigh: th - 1, fshin: 180, ffoot: 180,
       up: arm.up, fore: arm.fore, fup: far.up, ffore: far.fore));
   s.figure(b);
