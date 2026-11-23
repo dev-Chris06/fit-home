@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/programme.dart';
+import 'data/reminders.dart';
 
 class JournalEntry {
   final String id;
@@ -111,6 +112,11 @@ class AppState extends ChangeNotifier {
   String lastUpdateCheck = '';
   /// Remplacements choisis dans les séances : séance → (exercice d'origine → remplaçant).
   Map<String, Map<String, String>> subs = {};
+  /// Rappels : réglages, et false tant qu'ils n'ont pas été choisis au premier lancement.
+  ReminderSettings reminders = const ReminderSettings();
+  bool remindersConfigured = false;
+  /// Appelé quand les rappels doivent être reprogrammés (séance notée ou supprimée, réglages changés).
+  Future<void> Function()? onScheduleChange;
 
   Future<void> load() async {
     try {
@@ -128,6 +134,11 @@ class AppState extends ChangeNotifier {
       if (rawSubs != null && rawSubs.isNotEmpty) {
         final m = jsonDecode(rawSubs) as Map<String, dynamic>;
         subs = m.map((k, v) => MapEntry(k, Map<String, String>.from(v as Map)));
+      }
+      remindersConfigured = p.getBool('remindersConfigured') ?? false;
+      final rawRem = p.getString('reminders');
+      if (rawRem != null && rawRem.isNotEmpty) {
+        reminders = ReminderSettings.fromJson(Map<String, dynamic>.from(jsonDecode(rawRem) as Map));
       }
     } catch (_) {
       // Stockage illisible : on repart d'un journal vide plutôt que de bloquer l'app.
@@ -149,6 +160,7 @@ class AppState extends ChangeNotifier {
     entries = [...entries, e];
     notifyListeners();
     await _saveEntries();
+    await onScheduleChange?.call();
   }
 
   /// Remplace une séance déjà notée (même id) : sert aux réponses rapides de fin de séance.
@@ -162,6 +174,7 @@ class AppState extends ChangeNotifier {
     entries = entries.where((e) => e.id != id).toList();
     notifyListeners();
     await _saveEntries();
+    await onScheduleChange?.call();
   }
 
   Map<String, String> subsFor(String sessionId) => subs[sessionId] ?? const {};
@@ -189,6 +202,15 @@ class AppState extends ChangeNotifier {
     autoUpdateCheck = v;
     notifyListeners();
     await _prefs?.setBool('autoUpdateCheck', v);
+  }
+
+  Future<void> setReminders(ReminderSettings r) async {
+    reminders = r;
+    remindersConfigured = true;
+    notifyListeners();
+    await _prefs?.setString('reminders', jsonEncode(r.toJson()));
+    await _prefs?.setBool('remindersConfigured', true);
+    await onScheduleChange?.call();
   }
 
   Future<void> markUpdateChecked() async {

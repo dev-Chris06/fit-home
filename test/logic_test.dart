@@ -1,5 +1,6 @@
 import 'package:fit_home/app_state.dart';
 import 'package:fit_home/data/programme.dart';
+import 'package:fit_home/data/reminders.dart';
 import 'package:fit_home/data/session_plan.dart';
 import 'package:fit_home/services/update_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -104,6 +105,44 @@ void main() {
         expect(e.level, inInclusiveRange(1, 3), reason: e.id);
       }
       expect(exercises.length, 52);
+    });
+  });
+
+  group('rappels', () {
+    // Lundi 23 novembre 2026, 10 h.
+    final now = DateTime(2026, 11, 23, 10);
+    test('relance : 3 jours après la dernière séance, puis +2 et +4 jours', () {
+      final slots = reminderSlots(const ReminderSettings(days: 3, hour: 18), now: now, lastSession: DateTime(2026, 11, 22));
+      expect(slots.map((x) => x.when).toList(), [DateTime(2026, 11, 25, 18), DateTime(2026, 11, 27, 18), DateTime(2026, 11, 29, 18)]);
+      expect(slots.first.daysSince, 3);
+    });
+    test('relance déjà dépassée : ce soir à l’heure choisie, ou demain si l’heure est passée', () {
+      const s = ReminderSettings(days: 2, hour: 18);
+      expect(reminderSlots(s, now: now, lastSession: DateTime(2026, 11, 10)).first.when, DateTime(2026, 11, 23, 18));
+      final late = DateTime(2026, 11, 23, 20);
+      expect(reminderSlots(s, now: late, lastSession: DateTime(2026, 11, 10)).first.when, DateTime(2026, 11, 24, 18));
+    });
+    test('sans aucune séance : compte à partir d’aujourd’hui', () {
+      final slots = reminderSlots(const ReminderSettings(days: 2), now: now);
+      expect(slots.first.when, DateTime(2026, 11, 25, 18));
+      expect(slots.first.daysSince, isNull);
+      expect(reminderText(const ReminderSettings(), slots.first, 'A').title, contains('première'));
+    });
+    test('jours fixes : lundi, mercredi, vendredi, sauf un jour déjà fait', () {
+      const s = ReminderSettings(mode: ReminderMode.fixe, weekdays: {1, 3, 5}, hour: 18);
+      final slots = reminderSlots(s, now: now, horizonDays: 6);
+      expect(slots.map((x) => x.when).toList(), [DateTime(2026, 11, 23, 18), DateTime(2026, 11, 25, 18), DateTime(2026, 11, 27, 18)]);
+      final done = reminderSlots(s, now: now, lastSession: DateTime(2026, 11, 23), horizonDays: 6);
+      expect(done.first.when, DateTime(2026, 11, 25, 18));
+    });
+    test('désactivés : rien', () {
+      expect(reminderSlots(const ReminderSettings(mode: ReminderMode.off), now: now), isEmpty);
+    });
+    test('réglages enregistrés puis relus à l’identique', () {
+      const s = ReminderSettings(mode: ReminderMode.fixe, days: 4, hour: 7, minute: 30, weekdays: {2, 6});
+      final back = ReminderSettings.fromJson(s.toJson());
+      expect(back.toJson(), s.toJson());
+      expect(back.summary, 'Mar, Sam à 07:30');
     });
   });
 

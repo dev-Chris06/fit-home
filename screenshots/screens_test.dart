@@ -10,6 +10,7 @@ import 'package:fit_home/data/programme.dart';
 import 'package:fit_home/main.dart';
 import 'package:fit_home/screens/exercise_screen.dart';
 import 'package:fit_home/screens/guided_session_screen.dart';
+import 'package:fit_home/screens/reminder_screen.dart';
 import 'package:fit_home/screens/session_detail_screen.dart';
 import 'package:fit_home/theme.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ void main() {
   }
 
   testWidgets('accueil', (tester) async {
-    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
+    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false, 'remindersConfigured': true});
     await app.load();
     await app.addEntry(const JournalEntry(id: '1', date: '2026-11-10', type: 'A', reussi: true, charge: '2 bouteilles de 1,5 L', createdAt: '1'));
     await shoot(tester, const FitHomeApp(), '01-accueil');
@@ -74,7 +75,7 @@ void main() {
   });
 
   testWidgets('séries, repos et fin de séance', (tester) async {
-    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
+    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false, 'remindersConfigured': true});
     await app.load();
     await phone(tester);
     await tester.pumpWidget(_wrap(const GuidedSessionScreen(session: sessionA)));
@@ -97,6 +98,15 @@ void main() {
     await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/10-fin.png'));
   });
 
+  testWidgets('rappels', (tester) async {
+    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
+    await app.load();
+    await shoot(tester, _wrap(const ReminderScreen(firstTime: true)), '15-rappels');
+    await tester.tap(find.text('Certains jours, à heure fixe'));
+    await tester.pump(const Duration(milliseconds: 300));
+    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/16-rappels-fixe.png'));
+  });
+
   testWidgets('les 20 nouveaux exercices en grand', (tester) async {
     await phone(tester);
     const ids = ['gainage_lateral', 'crunch_velo', 'dead_bug', 'releve_bassin', 'creux', 'pont', 'pont_unijambe', 'sdt', 'ruade', 'sumo',
@@ -117,7 +127,7 @@ void main() {
   });
 
   testWidgets('bibliothèque et remplacement', (tester) async {
-    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
+    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false, 'remindersConfigured': true});
     await app.load();
     await phone(tester);
     await tester.pumpWidget(const FitHomeApp());
@@ -133,7 +143,7 @@ void main() {
   });
 
   testWidgets('journal et plus', (tester) async {
-    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
+    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false, 'remindersConfigured': true});
     await app.load();
     await app.addEntry(const JournalEntry(id: '2', date: '2026-11-12', type: 'B', ressenti: 'dur', notes: 'pompes 10, 9, 8', createdAt: '2'));
     await phone(tester);

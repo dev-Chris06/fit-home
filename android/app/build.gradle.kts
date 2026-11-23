@@ -17,12 +17,15 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.devchris06.fit_home"
-    compileSdk = flutter.compileSdkVersion
+    // 37 au minimum : exigé par flutter_local_notifications (rappels).
+    compileSdk = maxOf(flutter.compileSdkVersion, 37)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // « Desugaring » : permet aux rappels programmés de fonctionner aussi sur les anciennes versions d'Android.
+        isCoreLibraryDesugaringEnabled = true
     }
 
     defaultConfig {
@@ -65,4 +68,8 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

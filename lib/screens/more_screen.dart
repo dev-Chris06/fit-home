@@ -9,6 +9,7 @@ import '../theme.dart';
 import '../widgets/update_dialog.dart';
 import 'nutrition_screen.dart';
 import 'paliers_screen.dart';
+import 'reminder_screen.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({super.key});
@@ -53,6 +54,9 @@ class _MoreScreenState extends State<MoreScreen> {
           const SizedBox(height: 12),
           _tile(Icons.trending_up, 'Paliers de progression', 'Palier actuel : ${app.palier}',
               () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PaliersScreen()))),
+          const SizedBox(height: 10),
+          _tile(Icons.notifications_outlined, 'Rappels', app.reminders.summary,
+              () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ReminderScreen()))),
           const SizedBox(height: 10),
           _tile(Icons.restaurant_outlined, 'Alimentation', 'Les bases pour se dessiner',
               () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NutritionScreen()))),

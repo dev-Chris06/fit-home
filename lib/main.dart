@@ -7,13 +7,19 @@ import 'screens/home_screen.dart';
 import 'screens/journal_screen.dart';
 import 'screens/library_screen.dart';
 import 'screens/more_screen.dart';
+import 'screens/reminder_screen.dart';
 import 'screens/sessions_screen.dart';
+import 'services/reminder_service.dart';
 import 'theme.dart';
 import 'widgets/update_dialog.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await app.load();
+  await Reminders.init();
+  app.onScheduleChange = Reminders.reschedule;
+  // À chaque lancement, les rappels sont recalculés (fenêtre des 4 prochaines semaines pour les jours fixes).
+  Reminders.reschedule();
   runApp(const FitHomeApp());
 }
 
@@ -51,8 +57,12 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
-    // Vérification automatique des mises à jour, au plus une fois par jour et seulement si l'option est active.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Premier lancement : on règle les rappels.
+      if (!app.remindersConfigured && mounted) {
+        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ReminderScreen(firstTime: true)));
+      }
+      // Vérification automatique des mises à jour, au plus une fois par jour et seulement si l'option est active.
       if (app.autoUpdateCheck && app.lastUpdateCheck != isoDate(DateTime.now()) && mounted) {
         runUpdateCheck(context, silent: true);
       }
