@@ -885,14 +885,18 @@ void _quadriceps(Scene s, double t) {
 void _enfant(Scene s, double t) {
   s.room();
   final k = math.min(1.0, hold(t));
-  const hip = Offset(1200, 790), knee = Offset(1344.9, 836);
-  final torso = lerp(-88, 10, k) + k * math.sin(2 * math.pi * math.max(0.0, t - 1.5) / 3);
-  final sh = at(hip, torso, L.torso);
-  final hand = Offset.lerp(const Offset(1330, 790), const Offset(1584, 840), k)!;
-  final arm = ik(sh, hand, L.up, L.fore, 'down');
-  final far = ik(sh, hand - const Offset(10, 6), L.up, L.fore, 'down');
+  // Départ à genoux, buste droit ; puis les fesses reculent sur les talons, le buste se couche sur les cuisses,
+  // le front vient près du sol et les bras s'allongent loin devant.
+  const knee = Offset(1340, 850);
+  final hip = at(knee, lerp(-90, -146, k), L.thigh);
   final th = ang(hip, knee);
-  final b = computeBody(Pose(hip: hip, torso: torso, neck: lerp(4, 8, k), thigh: th, shin: 180, foot: 180, fthigh: th - 1, fshin: 180, ffoot: 180,
+  final torso = lerp(-88, 16, k) + k * 1.5 * math.sin(2 * math.pi * math.max(0.0, t - 1.5) / 3);
+  final sh = at(hip, torso, L.torso);
+  final start = at(at(sh, 92, L.up), 90, L.fore);
+  final hand = Offset.lerp(start, const Offset(1585, 850), k)!;
+  final arm = ik(sh, hand, L.up, L.fore, 'down');
+  final far = ik(sh, hand - const Offset(10, 2), L.up, L.fore, 'down');
+  final b = computeBody(Pose(hip: hip, torso: torso, neck: lerp(4, 10, k), thigh: th, shin: 180, foot: 180, fthigh: th - 1, fshin: 180, ffoot: 180,
       up: arm.up, fore: arm.fore, fup: far.up, ffore: far.fore));
   s.figure(b);
   s.zone(at(mid(b.hip, b.sh, .3), torso - 90, 22), t, 70, 28, torso);
