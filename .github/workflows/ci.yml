@@ -64,8 +64,11 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p screenshots/captures
-          cp pubspec.lock screenshots/captures/pubspec.lock.txt
           flutter pub outdated > screenshots/captures/dependances.txt 2>&1 || true
+          # pubspec.lock avec les dernières versions compatibles, calculé à part pour ne pas changer cette compilation.
+          # À recopier dans le dépôt quand dependances.txt signale des versions bloquées.
+          mkdir -p /tmp/maj && cp pubspec.yaml pubspec.lock /tmp/maj/
+          (cd /tmp/maj && flutter pub upgrade > /dev/null 2>&1 && cp pubspec.lock "$GITHUB_WORKSPACE/screenshots/captures/pubspec.lock.txt") || true
 
       - name: Publier les captures sur la branche « captures »
         if: steps.check.outputs.ready == 'true' && github.event_name == 'push'
