@@ -221,6 +221,20 @@ Un encadré explique que l'économie de batterie de certaines marques peut bloqu
 | Construction de l'APK en CI : erreur 429 de Maven (trop de requêtes) | Erreur passagère du serveur ; la publication, lancée en parallèle, a réussi |
 | La flèche « → » ne s'affichait pas dans l'écran des rappels | Textes reformulés sans flèche (version 1.2.1) |
 
+### Entretien du dépôt (23 novembre 2026)
+
+| Point | Ce qui a été fait |
+| --- | --- |
+| Actions GitHub dépréciées (Node.js 20, `setup-java` v4 plus maintenu) | `actions/checkout@v7`, `actions/setup-java@v6`, `actions/upload-artifact@v7` dans les trois workflows |
+| Erreurs 429 de Maven pendant la compilation | `cache: gradle` dans `setup-java` : les téléchargements de Gradle sont gardés d'une compilation à l'autre |
+| Workflow `bootstrap` relancé à chaque envoi pour rien | Ne se lance plus qu'à la main (onglet Actions → bootstrap → Run workflow) |
+| `pubspec.lock` en retard (sans la bibliothèque des rappels) | La CI calcule un `pubspec.lock` à jour à part et le publie sur la branche `captures` (`pubspec.lock.txt`), avec le bilan `dependances.txt` ; le fichier a été recopié dans le dépôt |
+| `package:flutter/material.dart` déprécié depuis Flutter 3.47 | Passage au paquet `material_ui` (`import 'package:material_ui/material_ui.dart'`) ; les traductions du système viennent de `GlobalMaterialLocalizations.delegates` et `flutter_localizations` n'est plus nécessaire |
+| Bibliothèques indirectes en retard (dbus, jni, url_launcher_android, vector_math) | Mises à jour par le nouveau `pubspec.lock`. `material_color_utilities` et `test_api` restent fixées par le SDK Flutter lui-même : c'est normal |
+
+**Mettre à jour les bibliothèques plus tard** : ouvrir `dependances.txt` sur la branche `captures`. S'il signale des versions
+bloquées, recopier `pubspec.lock.txt` de cette branche à la place de `pubspec.lock`, puis envoyer.
+
 ---
 
 ## Publier une nouvelle version (mode d'emploi)
