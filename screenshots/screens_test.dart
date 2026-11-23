@@ -97,6 +97,25 @@ void main() {
     await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/10-fin.png'));
   });
 
+  testWidgets('les 20 nouveaux exercices en grand', (tester) async {
+    await phone(tester);
+    const ids = ['gainage_lateral', 'crunch_velo', 'dead_bug', 'releve_bassin', 'creux', 'pont', 'pont_unijambe', 'sdt', 'ruade', 'sumo',
+      'pompes_declinees', 'arnold', 'rowing_inverse', 'kickback', 'pullover', 'jumping_jacks', 'burpees', 'talons_fesses', 'quadriceps', 'enfant'];
+    await tester.pumpWidget(_wrap(Scaffold(
+      body: GridView.count(
+        crossAxisCount: 4,
+        padding: const EdgeInsets.all(4),
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
+        children: [for (final id in ids) ExerciseScreenThumb(id)],
+      ),
+    )));
+    await tester.pump(const Duration(milliseconds: 1300));
+    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/13-nouveaux-a.png'));
+    await tester.pump(const Duration(milliseconds: 1000));
+    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/14-nouveaux-b.png'));
+  });
+
   testWidgets('bibliothèque et remplacement', (tester) async {
     SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
     await app.load();

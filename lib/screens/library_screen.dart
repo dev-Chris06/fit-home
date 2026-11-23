@@ -31,18 +31,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
         sliver: SliverList.list(children: [
           const Text('Exercices', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
           const SizedBox(height: 4),
-          Text('${exercises.length} exercices. Pour en mettre un dans une séance, ouvre la séance et touche ⇄.',
+          Text('${exercises.length} exercices. Pour en mettre un dans une séance, ouvre la séance et touche le bouton à double flèche à côté d’un exercice.',
               style: const TextStyle(color: Palette.muted)),
           const SizedBox(height: 12),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(children: [
-              _chip('Tous', group == null, () => setState(() => group = null)),
-              for (final g in Groups.all) _chip(g, group == g, () => setState(() => group = g)),
-            ]),
-          ),
-          const SizedBox(height: 6),
-          Row(children: [
+          Wrap(runSpacing: 6, children: [
+            _chip('Toutes', group == null, () => setState(() => group = null)),
+            for (final g in Groups.all) _chip(g, group == g, () => setState(() => group = g)),
+          ]),
+          const SizedBox(height: 10),
+          Wrap(runSpacing: 6, children: [
             _chip('Tous niveaux', level == null, () => setState(() => level = null)),
             for (final l in const [1, 2, 3]) _chip('Palier $l', level == l, () => setState(() => level = l)),
           ]),

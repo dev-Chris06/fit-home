@@ -42,7 +42,14 @@ class SessionDetailScreen extends StatelessWidget {
               Text(_format),
               if (canReplace) ...[
                 const SizedBox(height: 6),
-                const Text('Touche ⇄ pour remplacer un exercice par un autre de la même famille.', style: TextStyle(color: Palette.muted, fontSize: 13)),
+                const Text.rich(
+                  TextSpan(children: [
+                    TextSpan(text: 'Touche '),
+                    WidgetSpan(alignment: PlaceholderAlignment.middle, child: Icon(Icons.swap_horiz, size: 18, color: Palette.muted)),
+                    TextSpan(text: ' pour remplacer un exercice par un autre de la même famille.'),
+                  ]),
+                  style: TextStyle(color: Palette.muted, fontSize: 13),
+                ),
               ],
               if (canStart) ...[
                 const SizedBox(height: 14),
