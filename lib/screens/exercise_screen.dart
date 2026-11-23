@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../anim/exercise_view.dart';
 import '../data/programme.dart';
 import '../theme.dart';
+import 'session_detail_screen.dart' show LevelBadge;
 
 class ExerciseScreen extends StatelessWidget {
   final String exerciseId;
@@ -20,11 +21,16 @@ class ExerciseScreen extends StatelessWidget {
         children: [
           AspectRatio(aspectRatio: 1, child: ExerciseView(exerciseId)),
           const SizedBox(height: 16),
-          Eyebrow(ex.zone),
+          Row(children: [
+            Expanded(child: Eyebrow(ex.zone)),
+            LevelBadge(ex.level),
+          ]),
           const SizedBox(height: 4),
           Text(ex.name, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
           Text(ex.tip, style: const TextStyle(fontSize: 16, height: 1.4)),
+          const SizedBox(height: 6),
+          Text('Famille : ${ex.group}', style: const TextStyle(color: Palette.muted)),
           if (reps != null) ...[
             const SizedBox(height: 12),
             Text(reps!, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Palette.main)),

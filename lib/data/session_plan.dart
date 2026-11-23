@@ -18,11 +18,24 @@ class PlanStep {
   const PlanStep(this.kind, this.exerciseId, this.title, this.detail, this.seconds, this.phase, {this.set = 1, this.sets = 1, this.item = 0});
 }
 
-/// Les exercices réellement faits pour une séance, après les alternances et le palier.
+/// Remplace un exercice de séance par un autre choisi dans la bibliothèque.
+/// Le nombre de séries est gardé ; les répétitions (ou la durée) sont celles conseillées pour le nouvel exercice.
+/// En circuit, la durée d'effort de la séance (40 s) est gardée.
+SessionItem substitute(SessionItem it, String newId, {bool circuit = false}) {
+  final ex = exercises[newId];
+  if (ex == null) return it;
+  if (circuit) return SessionItem(newId, sets: it.sets, reps: it.reps, seconds: it.seconds);
+  return SessionItem(newId, sets: it.sets, reps: ex.reps, seconds: ex.seconds);
+}
+
+/// Les exercices réellement faits pour une séance : remplacements choisis par l'utilisateur ([subs] : exercice
+/// d'origine → remplaçant), sinon alternances et palier.
 /// [doneCount] = nombre de fois où cette séance a déjà été faite (sert aux alternances une fois sur deux).
-List<SessionItem> effectiveItems(SessionDef s, {required int palier, required int doneCount}) {
+List<SessionItem> effectiveItems(SessionDef s, {required int palier, required int doneCount, Map<String, String> subs = const {}}) {
   final odd = doneCount.isOdd;
   return s.items.map((it) {
+    final sub = subs[it.exerciseId];
+    if (sub != null && exercises.containsKey(sub)) return substitute(it, sub, circuit: s.kind == SessionKind.circuit);
     if (s.id == 'A' && it.exerciseId == 'pompes' && palier >= 3) {
       return SessionItem('classiques', sets: it.sets, reps: '8 à 12 répétitions');
     }
@@ -36,7 +49,8 @@ List<SessionItem> effectiveItems(SessionDef s, {required int palier, required in
   }).toList();
 }
 
-List<PlanStep> buildPlan(SessionDef s, {required int palier, required int doneCount, bool withWarmup = true}) {
+List<PlanStep> buildPlan(SessionDef s,
+    {required int palier, required int doneCount, bool withWarmup = true, Map<String, String> subs = const {}}) {
   final steps = <PlanStep>[];
   final rest = restSeconds(palier);
 
@@ -51,7 +65,7 @@ List<PlanStep> buildPlan(SessionDef s, {required int palier, required int doneCo
 
   if (s.kind == SessionKind.circuit) {
     final rounds = circuitRounds(palier);
-    final items = s.items;
+    final items = effectiveItems(s, palier: palier, doneCount: doneCount, subs: subs);
     for (var r = 1; r <= rounds; r++) {
       for (var i = 0; i < items.length; i++) {
         final it = items[i];
@@ -69,7 +83,7 @@ List<PlanStep> buildPlan(SessionDef s, {required int palier, required int doneCo
     return steps;
   }
 
-  final items = s.kind == SessionKind.muscu ? effectiveItems(s, palier: palier, doneCount: doneCount) : s.items;
+  final items = effectiveItems(s, palier: palier, doneCount: doneCount, subs: subs);
   final restBetween = s.kind == SessionKind.posture || s.kind == SessionKind.warmup ? 10 : rest;
   for (var i = 0; i < items.length; i++) {
     final it = items[i];

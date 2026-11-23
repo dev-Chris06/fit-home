@@ -77,6 +77,36 @@ void main() {
     });
   });
 
+  group('remplacements', () {
+    test('un exercice remplacé garde ses séries et prend ses répétitions', () {
+      final items = effectiveItems(sessionA, palier: 1, doneCount: 0, subs: {'squat': 'sumo'});
+      expect(items.first.exerciseId, 'sumo');
+      expect(items.first.sets, 3);
+      expect(items.first.reps, exercises['sumo']!.reps);
+    });
+    test('un maintien remplaçant devient chronométré', () {
+      final items = effectiveItems(sessionB, palier: 1, doneCount: 0, subs: {'crunchs': 'creux'});
+      expect(items.firstWhere((i) => i.exerciseId == 'creux').seconds, 20);
+    });
+    test('en circuit, la durée d’effort reste 40 s', () {
+      final items = effectiveItems(sessionC, palier: 1, doneCount: 0, subs: {'jump': 'burpees', 'releves': 'creux'});
+      expect(items.first.exerciseId, 'burpees');
+      expect(items.map((i) => i.seconds).toSet(), {40});
+    });
+    test('le remplacement passe avant les alternances', () {
+      final items = effectiveItems(sessionA, palier: 3, doneCount: 1, subs: {'pompes': 'pompes_declinees'});
+      expect(items.any((i) => i.exerciseId == 'pompes_declinees'), isTrue);
+      expect(items.any((i) => i.exerciseId == 'marteau'), isTrue);
+    });
+    test('chaque exercice a une famille connue et un palier de 1 à 3', () {
+      for (final e in exercises.values) {
+        expect(Groups.all.contains(e.group), isTrue, reason: e.id);
+        expect(e.level, inInclusiveRange(1, 3), reason: e.id);
+      }
+      expect(exercises.length, 52);
+    });
+  });
+
   group('versions', () {
     test('comparaison', () {
       expect(isNewer('1.0.10', '1.0.9'), isTrue);

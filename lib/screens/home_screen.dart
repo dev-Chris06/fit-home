@@ -21,8 +21,8 @@ class HomeScreen extends StatelessWidget {
       listenable: app,
       builder: (context, _) {
         final next = sessionById(app.nextSession);
-        final plan = buildPlan(next, palier: app.palier, doneCount: app.doneCount(next.id));
-        final firstId = effectiveItems(next, palier: app.palier, doneCount: app.doneCount(next.id)).first.exerciseId;
+        final plan = buildPlan(next, palier: app.palier, doneCount: app.doneCount(next.id), subs: app.subsFor(next.id));
+        final firstId = effectiveItems(next, palier: app.palier, doneCount: app.doneCount(next.id), subs: app.subsFor(next.id)).first.exerciseId;
         return ListView(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
           children: [
@@ -119,7 +119,7 @@ class HomeScreen extends StatelessWidget {
               child: const Row(children: [
                 Icon(Icons.list_alt, color: Palette.main),
                 SizedBox(width: 12),
-                Expanded(child: Text('Toutes les séances et les 32 exercices', style: TextStyle(fontWeight: FontWeight.w700))),
+                Expanded(child: Text('Toutes les séances', style: TextStyle(fontWeight: FontWeight.w700))),
                 Icon(Icons.chevron_right, color: Palette.muted),
               ]),
             ),

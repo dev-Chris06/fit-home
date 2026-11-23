@@ -97,6 +97,22 @@ void main() {
     await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/10-fin.png'));
   });
 
+  testWidgets('bibliothèque et remplacement', (tester) async {
+    SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
+    await app.load();
+    await phone(tester);
+    await tester.pumpWidget(const FitHomeApp());
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Exercices'));
+    await tester.pump(const Duration(milliseconds: 1000));
+    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/11-bibliotheque.png'));
+    await tester.pumpWidget(_wrap(const SessionDetailScreen(session: sessionA)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.byTooltip('Remplacer').first);
+    await tester.pump(const Duration(milliseconds: 1200));
+    await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('captures/12-remplacer.png'));
+  });
+
   testWidgets('journal et plus', (tester) async {
     SharedPreferences.setMockInitialValues({'autoUpdateCheck': false});
     await app.load();
@@ -117,7 +133,7 @@ void main() {
     final ids = exercises.keys.toList();
     await tester.pumpWidget(_wrap(Scaffold(
       body: GridView.count(
-        crossAxisCount: 4,
+        crossAxisCount: 6,
         padding: const EdgeInsets.all(4),
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,

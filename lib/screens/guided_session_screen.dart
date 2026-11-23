@@ -33,7 +33,7 @@ class _GuidedSessionScreenState extends State<GuidedSessionScreen> {
   @override
   void initState() {
     super.initState();
-    steps = buildPlan(widget.session, palier: app.palier, doneCount: app.doneCount(widget.session.id));
+    steps = buildPlan(widget.session, palier: app.palier, doneCount: app.doneCount(widget.session.id), subs: app.subsFor(widget.session.id));
     WakelockPlus.enable().catchError((_) {});
     _enter(0);
     timer = Timer.periodic(const Duration(milliseconds: 200), (_) => _tick());

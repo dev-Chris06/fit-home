@@ -5,6 +5,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app_state.dart';
 import 'screens/home_screen.dart';
 import 'screens/journal_screen.dart';
+import 'screens/library_screen.dart';
 import 'screens/more_screen.dart';
 import 'screens/sessions_screen.dart';
 import 'theme.dart';
@@ -63,8 +64,9 @@ class _HomeShellState extends State<HomeShell> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      HomeScreen(onOpenJournal: () => _goTo(2), onOpenSessions: () => _goTo(1)),
+      HomeScreen(onOpenJournal: () => _goTo(3), onOpenSessions: () => _goTo(1)),
       const SessionsScreen(),
+      const LibraryScreen(),
       const JournalScreen(),
       const MoreScreen(),
     ];
@@ -82,6 +84,7 @@ class _HomeShellState extends State<HomeShell> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Accueil'),
           NavigationDestination(icon: Icon(Icons.fitness_center_outlined), selectedIcon: Icon(Icons.fitness_center), label: 'Séances'),
+          NavigationDestination(icon: Icon(Icons.grid_view_outlined), selectedIcon: Icon(Icons.grid_view), label: 'Exercices'),
           NavigationDestination(icon: Icon(Icons.insights_outlined), selectedIcon: Icon(Icons.insights), label: 'Progrès'),
           NavigationDestination(icon: Icon(Icons.more_horiz), label: 'Plus'),
         ],

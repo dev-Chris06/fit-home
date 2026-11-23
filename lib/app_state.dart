@@ -109,6 +109,8 @@ class AppState extends ChangeNotifier {
   int palier = 1;
   bool autoUpdateCheck = true;
   String lastUpdateCheck = '';
+  /// Remplacements choisis dans les séances : séance → (exercice d'origine → remplaçant).
+  Map<String, Map<String, String>> subs = {};
 
   Future<void> load() async {
     try {
@@ -122,6 +124,11 @@ class AppState extends ChangeNotifier {
       palier = (p.getInt('palier') ?? 1).clamp(1, 3);
       autoUpdateCheck = p.getBool('autoUpdateCheck') ?? true;
       lastUpdateCheck = p.getString('lastUpdateCheck') ?? '';
+      final rawSubs = p.getString('subs');
+      if (rawSubs != null && rawSubs.isNotEmpty) {
+        final m = jsonDecode(rawSubs) as Map<String, dynamic>;
+        subs = m.map((k, v) => MapEntry(k, Map<String, String>.from(v as Map)));
+      }
     } catch (_) {
       // Stockage illisible : on repart d'un journal vide plutôt que de bloquer l'app.
     }
@@ -155,6 +162,21 @@ class AppState extends ChangeNotifier {
     entries = entries.where((e) => e.id != id).toList();
     notifyListeners();
     await _saveEntries();
+  }
+
+  Map<String, String> subsFor(String sessionId) => subs[sessionId] ?? const {};
+
+  /// Remplace [originalId] par [newId] dans la séance [sessionId] ; [newId] null = revenir à l'exercice d'origine.
+  Future<void> setSub(String sessionId, String originalId, String? newId) async {
+    final m = Map<String, String>.from(subs[sessionId] ?? const {});
+    if (newId == null || newId == originalId) {
+      m.remove(originalId);
+    } else {
+      m[originalId] = newId;
+    }
+    subs = {...subs, sessionId: m};
+    notifyListeners();
+    await _prefs?.setString('subs', jsonEncode(subs));
   }
 
   Future<void> setPalier(int p) async {

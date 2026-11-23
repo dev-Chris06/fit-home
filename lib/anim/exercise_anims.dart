@@ -513,6 +513,391 @@ void _classiques(Scene s, double t) {
   s.arrow(const Offset(1600, 560), t, 1.9, rise: false);
 }
 
+// =============================================================================================
+// Version 1.1 : 20 nouveaux exercices
+// =============================================================================================
+
+/// Silhouette de face dont les jambes se plient (squat sumo, jumping jacks).
+/// Renvoie la hauteur des épaules.
+double _frontLegsBody(Scene s, double cx, double hipY, Offset ankleL, Offset ankleR, {double footOut = 36}) {
+  s.ellipse(Offset(cx, 878), 150, 14, Tone.shade);
+  for (final side in [-1.0, 1.0]) {
+    final hip = Offset(cx + side * 34, hipY);
+    final ank = side < 0 ? ankleL : ankleR;
+    final k = ik(hip, ank, L.thigh, L.shin, side > 0 ? 'fwd' : 'back');
+    final knee = at(hip, k.up, L.thigh);
+    s.stroke([hip, knee, ank, Offset(ank.dx + side * footOut, ank.dy)], Tone.main, 38, tag: 'leg');
+  }
+  final shY = hipY - 156;
+  s.polygon([Offset(cx - 52, shY), Offset(cx + 52, shY), Offset(cx + 36, hipY), Offset(cx - 36, hipY)], Tone.main, strokeW: 30);
+  s.circle(Offset(cx, shY - 86), 40, Tone.main, tag: 'head');
+  return shY;
+}
+
+/// Bras repliés, mains contre les tempes (crunchs, crunch vélo).
+void _handsAtTemples(Body b, double dir) {
+  List<Offset> armTo(double dx) {
+    final hand = at(b.hd, dir + 180, 10 + dx);
+    final elbow = at(at(b.hd, dir - 90, 58), dir + 180, 44 + dx);
+    return [b.sh, elbow, hand];
+  }
+
+  b.arm = armTo(0);
+  b.farArm = armTo(10);
+}
+
+// ---- Abdos et gainage ----------------------------------------------------------------------
+
+void _gainageLateral(Scene s, double t) {
+  s.room();
+  // Vu de face : appui sur un avant-bras, pieds empilés, le bras du dessus tendu vers le ciel.
+  final a = -13.8 + .3 * math.sin(2 * math.pi * t / 1.6);
+  const tip = Offset(1000, 858);
+  final ankle = at(tip, a, L.foot), hip = at(ankle, a, L.thigh + L.shin);
+  final b = computeBody(Pose(hip: hip, torso: a, neck: -4, thigh: a + 180, shin: a + 180, foot: a + 180,
+      fthigh: a + 180.8, fshin: a + 180.8, ffoot: a + 180.8, up: 90, fore: 0, fup: -90, ffore: -90));
+  s.figure(b);
+  s.zone(at(mid(b.hip, b.sh, .35), a + 90, 14), t, 80, 30, a);
+}
+
+void _crunchVelo(Scene s, double t) {
+  s.room();
+  const hip = Offset(1200, 836);
+  final sv = math.sin(2 * math.pi * math.max(0.0, t - .2) / 1.6);
+  final k1 = eio((sv + 1) / 2), k2 = 1 - k1;
+  final r = -30 + 2 * sv;
+  double th(double k) => lerp(-165, -75, k);
+  double sn(double k) => lerp(-165, -180, k);
+  final b = computeBody(Pose(hip: hip, torso: r, neck: -10, thigh: th(k1), shin: sn(k1), foot: sn(k1), fthigh: th(k2), fshin: sn(k2), ffoot: sn(k2),
+      up: r, fore: r, fup: r, ffore: r));
+  _handsAtTemples(b, r - 10);
+  s.figure(b);
+  s.zone(at(mid(hip, b.sh, .5), r - 90, 22), t, 80, 30, r);
+}
+
+void _deadBug(Scene s, double t) {
+  s.room();
+  const hip = Offset(1200, 836);
+  final u = math.sin(2 * math.pi * math.max(0.0, t - .2) / 3);
+  final k1 = eio(math.max(0.0, u)), k2 = eio(math.max(0.0, -u));
+  // Bras opposé et jambe opposée s'allongent ensemble : bras proche + jambe éloignée, puis l'inverse.
+  double th(double k) => lerp(-90, -168, k);
+  double sn(double k) => lerp(180, 192, k);
+  final b = computeBody(Pose(hip: hip, torso: 0, neck: 0,
+      thigh: th(k2), shin: sn(k2), foot: sn(k2), fthigh: th(k1), fshin: sn(k1), ffoot: sn(k1),
+      up: lerp(-90, -8, k1), fore: lerp(-90, -8, k1), fup: lerp(-90, -8, k2), ffore: lerp(-90, -8, k2)));
+  s.figure(b);
+  s.zone(at(mid(b.hip, b.sh, .5), -90, 22), t, 80, 30);
+}
+
+void _releveBassin(Scene s, double t) {
+  s.room();
+  const sh = Offset(1375, 836);
+  final p = eio(cycle(t, 2, .2));
+  final al = lerp(0, 14, p);
+  final hip = at(sh, 180 + al, L.torso);
+  final thigh = lerp(-90, -50, p);
+  final b = computeBody(Pose(hip: hip, torso: al, neck: -al, thigh: thigh, shin: lerp(180, 220, p), foot: lerp(180, 220, p),
+      fthigh: thigh - 2, fshin: lerp(181, 221, p), ffoot: lerp(181, 221, p), up: 180, fore: 180, fup: 179, ffore: 180));
+  s.figure(b);
+  s.zone(at(mid(b.hip, b.sh, .25), al - 90, 20), t, 70, 28, al);
+  s.arrow(const Offset(1000, 560), t, 2, rise: true);
+}
+
+void _creux(Scene s, double t) {
+  s.room();
+  const hip = Offset(1200, 836);
+  final br = math.sin(2 * math.pi * t / 2.4);
+  final torso = -14 + 1.2 * br, l = -167 - 1.2 * br;
+  final b = computeBody(Pose(hip: hip, torso: torso, neck: -6, thigh: l, shin: l, foot: l, fthigh: l + .8, fshin: l + .8, ffoot: l + .8,
+      up: torso - 4, fore: torso - 4, fup: torso - 6, ffore: torso - 6));
+  s.figure(b);
+  s.zone(at(mid(b.hip, b.sh, .5), torso - 90, 22), t, 80, 30, torso);
+}
+
+// ---- Jambes et fessiers --------------------------------------------------------------------
+
+Body _bridge(double t) {
+  const sh = Offset(1380, 840);
+  final p = eio(cycle(t, 2.2, .2));
+  final th = lerp(180, 214, p);
+  final hip = at(sh, th, L.torso);
+  final torso = th - 180;
+  final leg = ik(hip, const Offset(1000, 858), L.thigh, L.shin, 'up');
+  return computeBody(Pose(hip: hip, torso: torso, neck: -torso, thigh: leg.up, shin: leg.fore, foot: 180,
+      fthigh: leg.up - 2, fshin: leg.fore + 1, ffoot: 180, up: 178, fore: 180, fup: 177, ffore: 180));
+}
+
+void _pont(Scene s, double t) {
+  s.room();
+  final b = _bridge(t);
+  s.figure(b);
+  s.zone(at(b.hip, 90, 18), t, 70, 36);
+  s.arrow(const Offset(1600, 600), t, 2.2, rise: true);
+}
+
+void _pontUnijambe(Scene s, double t) {
+  s.room();
+  final base = _bridge(t);
+  final th = ang(base.hip, base.knee);
+  // La jambe libre reste tendue dans l'axe de la cuisse d'appui.
+  final b = computeBody(Pose(hip: base.hip, torso: ang(base.hip, base.sh), neck: -ang(base.hip, base.sh),
+      thigh: ang(base.hip, base.knee), shin: ang(base.knee, base.ankle), foot: 180,
+      fthigh: th, fshin: th, ffoot: th + 60, up: 178, fore: 180, fup: 177, ffore: 180));
+  s.figure(b);
+  s.zone(at(b.hip, 90, 18), t, 70, 36);
+  s.arrow(const Offset(1600, 600), t, 2.2, rise: true);
+}
+
+void _sdt(Scene s, double t) {
+  s.room();
+  final p = eio(cycle(t, 2.4, .2));
+  final hip = Offset(lerp(1330, 1268, p), lerp(560, 578, p));
+  final leg = ik(hip, const Offset(1330, 858), L.thigh, L.shin, 'fwd');
+  final fleg = ik(hip, const Offset(1318, 858), L.thigh, L.shin, 'fwd');
+  final torso = lerp(-88, -12, p);
+  final b = computeBody(Pose(hip: hip, torso: torso, neck: lerp(4, 14, p), thigh: leg.up, shin: leg.fore, foot: 0,
+      fthigh: fleg.up, fshin: fleg.fore, ffoot: 0, up: 90, fore: 90, fup: 92, ffore: 92));
+  s.figure(b, prop: dumbbell, farProp: dumbbell);
+  s.zone(at(mid(b.hip, b.knee, .5), 180, 14), t, 84, 28, _ang(b.hip, b.knee));
+  s.arrow(const Offset(1620, 560), t, 2.4, rise: false);
+}
+
+void _ruade(Scene s, double t) {
+  s.room();
+  const hip = Offset(1180, 694), sh = Offset(1355, 640);
+  final torso = ang(hip, sh);
+  final arm = ik(sh, const Offset(1362, 852), L.up, L.fore, 'fwd'), farArm = ik(sh, const Offset(1350, 852), L.up, L.fore, 'fwd');
+  final p = eio(cycle(t, 1.8, .2));
+  final th = lerp(90, 190, p);
+  final b = computeBody(Pose(hip: hip, torso: torso, neck: 20, thigh: th, shin: th + 90, foot: th + 92,
+      fthigh: 92, fshin: 181, ffoot: 183, up: arm.up, fore: arm.fore, fup: farArm.up, ffore: farArm.fore));
+  s.figure(b);
+  s.zone(at(hip, -150, 22), t, 56, 42);
+  s.arrow(const Offset(960, 480), t, 1.8, rise: true);
+}
+
+void _sumo(Scene s, double t) {
+  s.room();
+  const cx = 1330.0;
+  final p = eio(cycle(t, 2, .2));
+  final hipY = lerp(575, 690, p);
+  final shY = _frontLegsBody(s, cx, hipY, const Offset(cx - 130, 858), const Offset(cx + 130, 858));
+  for (final side in [-1.0, 1.0]) {
+    final shp = Offset(cx + side * 58, shY + 6), hand = Offset(cx + side * 14, shY + 196);
+    final a = ik(shp, hand, L.up, L.fore, side > 0 ? 'fwd' : 'back');
+    s.stroke([shp, at(shp, a.up, L.up), hand], Tone.main, 30, tag: 'arm');
+  }
+  goblet(s, Offset(cx, shY + 214), 0, false);
+  s.zone(Offset(cx - 84, hipY + 60), t, 48, 30);
+  s.zone(Offset(cx + 84, hipY + 60), t, 48, 30);
+  s.arrow(const Offset(1700, 560), t, 2, rise: false);
+}
+
+// ---- Haut du corps -------------------------------------------------------------------------
+
+void _pompesDeclinees(Scene s, double t) {
+  s.room();
+  chair(s, 900, 1100, 700);
+  final p = cycle(t, 1.9, .2);
+  const a0 = Offset(1030, 660);
+  final b0 = lerp(-2.4, 12, p);
+  final hip = at(a0, b0, L.thigh + L.shin), sh = at(hip, b0, L.torso);
+  final arm = ik(sh, const Offset(1500, 850), L.up, L.fore, 'back'), far = ik(sh, const Offset(1488, 850), L.up, L.fore, 'back');
+  final b = computeBody(Pose(hip: hip, torso: b0, neck: 4, thigh: b0 + 180, shin: b0 + 180, foot: 74, fthigh: b0 + 180, fshin: b0 + 180, ffoot: 76,
+      up: arm.up, fore: arm.fore, fup: far.up, ffore: far.fore));
+  s.figure(b);
+  s.zone(at(mid(hip, sh, .82), b0 + 90, 20), t, 62, 32, b0);
+  s.arrow(const Offset(1660, 560), t, 1.9, rise: false);
+}
+
+void _arnold(Scene s, double t) {
+  s.room();
+  const cx = 1330.0;
+  final p = eio(cycle(t, 2.4, .2));
+  frontBody(s, cx);
+  for (final side in [-1.0, 1.0]) {
+    final sh = Offset(cx + side * 58, 410);
+    final mode = side > 0 ? 'fwd' : 'back';
+    final h1 = Offset(cx + side * 172, 300);
+    final e1 = at(sh, ik(sh, h1, L.up, L.fore, mode).up, L.up);
+    Offset h, e;
+    if (p < .5) {
+      // 1re moitié : les haltères partent devant le visage (bras vers toi, donc raccourcis) et s'ouvrent.
+      final q = eio(p / .5);
+      h = Offset.lerp(Offset(cx + side * 46, 372), h1, q)!;
+      e = Offset.lerp(Offset(cx + side * 74, 476), e1, q)!;
+    } else {
+      // 2e moitié : on pousse au-dessus de la tête.
+      final q = eio((p - .5) / .5);
+      h = Offset.lerp(h1, Offset(cx + side * 84, 204), q)!;
+      e = at(sh, ik(sh, h, L.up, L.fore, mode).up, L.up);
+    }
+    s.stroke([sh, e, h], Tone.main, 30, tag: 'arm');
+    dbFront(s, h, 0, false);
+  }
+  s.zone(const Offset(cx - 64, 410), t, 42, 42);
+  s.zone(const Offset(cx + 64, 410), t, 42, 42);
+  s.arrow(const Offset(1690, 300), t, 2.4, rise: true);
+}
+
+void _rowingInverse(Scene s, double t) {
+  s.room();
+  // La table, dessinée derrière la silhouette.
+  s.rect(1190, 590, 24, 278, Tone.wood);
+  s.rect(1676, 590, 24, 278, Tone.wood);
+  s.rect(1160, 560, 560, 30, Tone.wood, r: 6);
+  s.rect(1166, 560, 548, 10, Tone.pad, r: 5);
+  final p = eio(cycle(t, 2, .2));
+  const ankle = Offset(1040, 846);
+  final b0 = lerp(-8, -22, p);
+  final hip = at(ankle, b0, L.thigh + L.shin), sh = at(hip, b0, L.torso);
+  final arm = ik(sh, const Offset(1470, 580), L.up, L.fore, 'back'), far = ik(sh, const Offset(1458, 580), L.up, L.fore, 'back');
+  final b = computeBody(Pose(hip: hip, torso: b0, neck: 0, thigh: b0 + 180, shin: b0 + 180, foot: b0 - 90, fthigh: b0 + 180, fshin: b0 + 180, ffoot: b0 - 88,
+      up: arm.up, fore: arm.fore, fup: far.up, ffore: far.fore));
+  s.figure(b);
+  s.zone(at(mid(hip, sh, .65), b0 + 90, 22), t, 100, 34, b0);
+  s.arrow(const Offset(1770, 700), t, 2, rise: true);
+}
+
+void _kickback(Scene s, double t) {
+  s.room();
+  const hip = Offset(1240, 620);
+  final leg = ik(hip, const Offset(1292, 858), L.thigh, L.shin, 'fwd');
+  final fleg = ik(hip, const Offset(1278, 858), L.thigh, L.shin, 'fwd');
+  final p = eio(cycle(t, 2, .2));
+  final b = computeBody(Pose(hip: hip, torso: -22, neck: 10, thigh: leg.up, shin: leg.fore, foot: 0, fthigh: fleg.up, fshin: fleg.fore, ffoot: 0,
+      up: 182, fore: lerp(90, 178, p), fup: 184, ffore: lerp(92, 180, p)));
+  s.figure(b, prop: dumbbell, farProp: dumbbell);
+  final a = _ang(b.sh, b.elbow);
+  s.zone(at(mid(b.sh, b.elbow, .5), a + 90, 12), t, 60, 26, a);
+}
+
+void _pullover(Scene s, double t) {
+  s.room();
+  const hip = Offset(1150, 836);
+  final leg = ik(hip, const Offset(1012, 852), L.thigh, L.shin, 'up');
+  final p = eio(cycle(t, 2.2, .2));
+  final up = lerp(-90, -8, p);
+  final b = computeBody(Pose(hip: hip, torso: 0, neck: 0, thigh: leg.up, shin: leg.fore, foot: 180, fthigh: leg.up - 3, fshin: leg.fore + 2, ffoot: 180,
+      up: up, fore: up + 4, fup: up - 3, ffore: up + 1));
+  s.figure(b, prop: dumbbell);
+  s.zone(at(mid(b.hip, b.sh, .75), -90, 20), t, 70, 30);
+}
+
+// ---- Cardio et mobilité --------------------------------------------------------------------
+
+void _jumpingJacks(Scene s, double t) {
+  s.room();
+  const cx = 1330.0;
+  final x = math.max(0.0, t - .2);
+  final p = eio(cycle(t, 1.2, .2));
+  final h = 26 * math.sin(math.pi * ((x / .6) % 1)).abs();
+  final hipY = 585 - h, spread = lerp(40, 150, p);
+  final shY = _frontLegsBody(s, cx, hipY, Offset(cx - spread, 858 - h), Offset(cx + spread, 858 - h));
+  for (final side in [-1.0, 1.0]) {
+    final sh = Offset(cx + side * 58, shY + 6);
+    final r = lerp(80, -80, p);
+    final a = side > 0 ? r : 180 - r;
+    s.stroke([sh, at(sh, a, L.up), at(sh, a, L.up + L.fore)], Tone.main, 30, tag: 'arm');
+  }
+  s.zone(Offset(cx - 70, hipY + 70), t, 46, 30);
+  s.zone(Offset(cx + 70, hipY + 70), t, 46, 30);
+}
+
+class _BurpeeState {
+  final Offset ankle, hip;
+  final double torso, foot;
+  final bool armsUp; // bras tendus au-dessus de la tête
+  final Offset? hand; // main posée au sol
+  const _BurpeeState(this.ankle, this.hip, this.torso, this.foot, {this.armsUp = false, this.hand});
+
+  Offset handFor(Offset sh) {
+    if (hand != null) return hand!;
+    if (armsUp) return at(at(sh, -95, L.up), -95, L.fore);
+    return at(at(sh, 92, L.up), 90, L.fore);
+  }
+
+  Offset get sh => at(hip, torso, L.torso);
+}
+
+void _burpees(Scene s, double t) {
+  s.room();
+  const stand = _BurpeeState(Offset(1330, 858), Offset(1330, 560), -88, 0);
+  const squat = _BurpeeState(Offset(1330, 858), Offset(1220, 752), -35, 0, hand: Offset(1450, 850));
+  const plank = _BurpeeState(Offset(1010, 818), Offset(1286.3, 706.4), -22, 74, hand: Offset(1450, 850));
+  const jump = _BurpeeState(Offset(1330, 758), Offset(1330, 460), -88, 40, armsUp: true);
+  // debout → accroupi → planche (tenue) → accroupi → saut → debout
+  const keys = [stand, squat, plank, plank, squat, jump, stand];
+  const times = [0.0, .16, .32, .46, .62, .78, 1.0];
+  final u = t < .2 ? 0.0 : ((t - .2) % 3.2) / 3.2;
+  var i = 0;
+  while (i < times.length - 2 && u >= times[i + 1]) {
+    i++;
+  }
+  final q = eio(seg(u, times[i], times[i + 1]));
+  final a = keys[i], b = keys[i + 1];
+  final hop = (a == squat && b == plank) || (a == plank && b == squat) ? 50 * math.sin(math.pi * q) : 0.0;
+  final ankle = Offset.lerp(a.ankle, b.ankle, q)! - Offset(0, hop);
+  final hip = Offset.lerp(a.hip, b.hip, q)!;
+  final torso = lerp(a.torso, b.torso, q);
+  final sh = at(hip, torso, L.torso);
+  final hand = Offset.lerp(a.handFor(a.sh), b.handFor(b.sh), q)!;
+  final leg = ik(hip, ankle, L.thigh, L.shin, 'up');
+  final arm = ik(sh, hand, L.up, L.fore, 'back');
+  final far = ik(sh, hand - const Offset(12, 0), L.up, L.fore, 'back');
+  final foot = lerp(a.foot, b.foot, q);
+  final body = computeBody(Pose(hip: hip, torso: torso, neck: 4, thigh: leg.up, shin: leg.fore, foot: foot, fthigh: leg.up + 1, fshin: leg.fore + 1, ffoot: foot + 2,
+      up: arm.up, fore: arm.fore, fup: far.up, ffore: far.fore));
+  s.figure(body);
+  s.zone(mid(body.hip, body.knee, .5), t, 80, 32, _ang(body.hip, body.knee));
+}
+
+void _talonsFesses(Scene s, double t) {
+  s.room();
+  final sv = math.sin(2 * math.pi * math.max(0.0, t - .2) / .8);
+  final k1 = math.max(0.0, sv), k2 = math.max(0.0, -sv);
+  final hip = Offset(1330, 560 - 8 * sv.abs());
+  final sw = 34 * sv;
+  final b = computeBody(Pose(hip: hip, torso: -88, neck: 4,
+      thigh: lerp(90, 100, k1), shin: lerp(90, 250, k1), foot: lerp(0, 160, k1),
+      fthigh: lerp(90, 100, k2), fshin: lerp(90, 250, k2), ffoot: lerp(0, 160, k2),
+      up: 90 + sw, fore: sw, fup: 90 - sw, ffore: -sw));
+  s.figure(b);
+  s.zone(at(mid(b.hip, b.knee, .5), 180, 12), t, 70, 26, _ang(b.hip, b.knee));
+}
+
+void _quadriceps(Scene s, double t) {
+  s.room();
+  final k = math.min(1.0, hold(t));
+  const hip = Offset(1330, 560);
+  final thigh = lerp(90, 98, k), shin = lerp(90, 250, k), foot = lerp(0, 165, k);
+  final pre = computeBody(Pose(hip: hip, torso: -90, neck: 4, thigh: thigh, shin: shin, foot: foot, fthigh: 90, fshin: 90, ffoot: 0, up: 92, fore: 90));
+  // La main va chercher la cheville derrière les fesses ; l'autre bras part devant pour l'équilibre.
+  final hand = Offset.lerp(at(at(pre.sh, 92, L.up), 90, L.fore), pre.ankle, k)!;
+  final arm = ik(pre.sh, hand, L.up, L.fore, 'back');
+  final b = computeBody(Pose(hip: hip, torso: -90, neck: 4, thigh: thigh, shin: shin, foot: foot, fthigh: 90, fshin: 90, ffoot: 0,
+      up: arm.up, fore: arm.fore, fup: lerp(92, -10, k), ffore: lerp(90, -10, k)));
+  s.figure(b);
+  s.zone(at(mid(b.hip, b.knee, .5), 0, 10), t, 60, 26, _ang(b.hip, b.knee));
+}
+
+void _enfant(Scene s, double t) {
+  s.room();
+  final k = math.min(1.0, hold(t));
+  const hip = Offset(1200, 790), knee = Offset(1344.9, 836);
+  final torso = lerp(-88, 10, k) + k * math.sin(2 * math.pi * math.max(0.0, t - 1.5) / 3);
+  final sh = at(hip, torso, L.torso);
+  final hand = Offset.lerp(const Offset(1330, 790), const Offset(1584, 846), k)!;
+  final arm = ik(sh, hand, L.up, L.fore, 'down');
+  final far = ik(sh, hand - const Offset(10, 2), L.up, L.fore, 'down');
+  final th = ang(hip, knee);
+  final b = computeBody(Pose(hip: hip, torso: torso, neck: lerp(4, 8, k), thigh: th, shin: 180, foot: 180, fthigh: th - 1, fshin: 180, ffoot: 180,
+      up: arm.up, fore: arm.fore, fup: far.up, ffore: far.fore));
+  s.figure(b);
+  s.zone(at(mid(b.hip, b.sh, .3), torso - 90, 22), t, 70, 28, torso);
+}
+
 const Map<String, AnimSpec> exerciseAnims = {
   'moulinets': AnimSpec(_moulinets),
   'genoux': AnimSpec(_genoux),
@@ -546,4 +931,25 @@ const Map<String, AnimSpec> exerciseAnims = {
   'marteau': AnimSpec(_marteau),
   'chaise': AnimSpec(_chaise, loop: 7),
   'classiques': AnimSpec(_classiques),
+  // Version 1.1
+  'gainage_lateral': AnimSpec(_gainageLateral),
+  'crunch_velo': AnimSpec(_crunchVelo),
+  'dead_bug': AnimSpec(_deadBug),
+  'releve_bassin': AnimSpec(_releveBassin),
+  'creux': AnimSpec(_creux),
+  'pont': AnimSpec(_pont),
+  'pont_unijambe': AnimSpec(_pontUnijambe),
+  'sdt': AnimSpec(_sdt),
+  'ruade': AnimSpec(_ruade),
+  'sumo': AnimSpec(_sumo),
+  'pompes_declinees': AnimSpec(_pompesDeclinees),
+  'arnold': AnimSpec(_arnold),
+  'rowing_inverse': AnimSpec(_rowingInverse),
+  'kickback': AnimSpec(_kickback),
+  'pullover': AnimSpec(_pullover),
+  'jumping_jacks': AnimSpec(_jumpingJacks),
+  'burpees': AnimSpec(_burpees),
+  'talons_fesses': AnimSpec(_talonsFesses),
+  'quadriceps': AnimSpec(_quadriceps, loop: 7),
+  'enfant': AnimSpec(_enfant, loop: 8),
 };
