@@ -888,9 +888,9 @@ void _enfant(Scene s, double t) {
   const hip = Offset(1200, 790), knee = Offset(1344.9, 836);
   final torso = lerp(-88, 10, k) + k * math.sin(2 * math.pi * math.max(0.0, t - 1.5) / 3);
   final sh = at(hip, torso, L.torso);
-  final hand = Offset.lerp(const Offset(1330, 790), const Offset(1584, 846), k)!;
+  final hand = Offset.lerp(const Offset(1330, 790), const Offset(1584, 840), k)!;
   final arm = ik(sh, hand, L.up, L.fore, 'down');
-  final far = ik(sh, hand - const Offset(10, 2), L.up, L.fore, 'down');
+  final far = ik(sh, hand - const Offset(10, 6), L.up, L.fore, 'down');
   final th = ang(hip, knee);
   final b = computeBody(Pose(hip: hip, torso: torso, neck: lerp(4, 8, k), thigh: th, shin: 180, foot: 180, fthigh: th - 1, fshin: 180, ffoot: 180,
       up: arm.up, fore: arm.fore, fup: far.up, ffore: far.fore));
