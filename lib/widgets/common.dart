@@ -1,5 +1,5 @@
 // Petits outils partagés par les écrans : dates en français, libellés, tuiles de statistiques.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/programme.dart';
 import '../theme.dart';

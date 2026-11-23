@@ -2,7 +2,7 @@
 // L'écran reste allumé pendant la séance (wakelock) et le téléphone vibre à la fin de chaque minuteur.
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 

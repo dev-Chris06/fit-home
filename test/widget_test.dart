@@ -1,7 +1,7 @@
 // Test de fumée : l'app démarre et affiche l'accueil avec la séance A proposée.
 import 'package:fit_home/app_state.dart';
 import 'package:fit_home/main.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

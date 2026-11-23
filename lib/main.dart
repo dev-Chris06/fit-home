@@ -1,6 +1,5 @@
 // Point d'entrée : charge le journal enregistré sur le téléphone, puis affiche l'app.
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'app_state.dart';
 import 'screens/home_screen.dart';
@@ -34,11 +33,8 @@ class FitHomeApp extends StatelessWidget {
       theme: buildTheme(),
       locale: const Locale('fr'),
       supportedLocales: const [Locale('fr')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      // Textes du système (boutons des dialogues, sélecteur d'heure…) en français.
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       home: const HomeShell(),
     );
   }

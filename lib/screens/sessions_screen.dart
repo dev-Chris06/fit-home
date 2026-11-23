@@ -1,5 +1,5 @@
 // La liste des séances : échauffement, A, B, C, posture et variantes.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/programme.dart';
 import '../theme.dart';

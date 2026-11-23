@@ -1,5 +1,5 @@
 // L'onglet Progrès : toutes les séances faites, le palier actuel et le conseil de progression.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../app_state.dart';
 import '../theme.dart';

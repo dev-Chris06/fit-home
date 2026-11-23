@@ -1,5 +1,5 @@
 // Les couleurs et le thème de l'app : les mêmes que les animations (bleu nuit, vert menthe, orange).
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class Palette {
   static const ground = Color(0xFF0F2236); // fond bleu nuit

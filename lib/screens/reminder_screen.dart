@@ -1,5 +1,5 @@
 // Le réglage des rappels : proposé au premier lancement, puis modifiable à tout moment depuis Plus → Rappels.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../app_state.dart';
 import '../data/reminders.dart';

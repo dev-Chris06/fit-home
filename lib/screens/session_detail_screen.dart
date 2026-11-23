@@ -1,6 +1,6 @@
 // Le détail d'une séance : format, liste des exercices (avec leur animation), bouton pour la lancer,
 // et le bouton « Remplacer » pour changer un exercice par un autre de la bibliothèque.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../anim/exercise_view.dart';
 import '../app_state.dart';

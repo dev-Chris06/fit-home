@@ -1,5 +1,5 @@
 // Les trois paliers de progression, et le choix du palier actuel.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../app_state.dart';
 import '../data/programme.dart';

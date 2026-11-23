@@ -1,5 +1,5 @@
 // La fiche d'un exercice : grande animation, muscle travaillé, conseil et séries.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../anim/exercise_view.dart';
 import '../data/programme.dart';

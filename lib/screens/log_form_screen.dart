@@ -1,5 +1,5 @@
 // Le formulaire pour noter une séance dans le journal.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../app_state.dart';
 import '../theme.dart';

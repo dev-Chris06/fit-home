@@ -1,5 +1,5 @@
 // Accueil : la prochaine séance de la rotation, un bouton pour la lancer, et les statistiques.
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../anim/exercise_view.dart';
 import '../app_state.dart';
