@@ -1,7 +1,7 @@
 # Fit Home
 
 Application Android de programme sportif à la maison, **100 % hors ligne** : trois séances qui tournent (A → B → C),
-une mini-séance posture et souplesse, 32 exercices animés, une séance guidée avec minuteur, un journal et des paliers de progression.
+une mini-séance posture et souplesse, 52 exercices animés, une séance guidée avec minuteur, un journal et des paliers de progression.
 
 Faite avec Flutter par [dev-Chris06](https://github.com/dev-Chris06).
 
@@ -22,9 +22,10 @@ L'app peut aussi vérifier toute seule au démarrage (une fois par jour, seuleme
 | Écran | Rôle |
 | --- | --- |
 | Accueil | La prochaine séance de la rotation, un bouton pour la lancer, les statistiques |
-| Séances | Échauffement, séances A, B, C, posture et variantes, avec l'animation de chaque exercice |
+| Séances | Échauffement, séances A, B, C, posture et variantes, avec l'animation de chaque exercice et le bouton « Remplacer » |
+| Exercices | La bibliothèque des 52 exercices, filtrable par famille et par palier |
 | Séance guidée | Enchaîne échauffement, séries et repos avec un minuteur ; l'écran reste allumé |
-| Journal | Les séances notées, le palier actuel et le conseil pour monter de palier |
+| Progrès | Les séances notées, le palier actuel et le conseil pour monter de palier |
 | Plus | Paliers, alimentation, conseils de sécurité, mises à jour |
 
 ## Pour les développeurs
@@ -32,4 +33,4 @@ L'app peut aussi vérifier toute seule au démarrage (une fois par jour, seuleme
 - Code : `lib/` (voir [DOCUMENTATION.md](DOCUMENTATION.md) pour l'architecture et le journal de construction).
 - Les APK sont construits par **GitHub Actions** (`.github/workflows/`), pas besoin de compiler sur son PC.
 - Publier une version : changer `version:` dans `pubspec.yaml`, ajouter la section correspondante dans `CHANGELOG.md`, envoyer sur `main` → le workflow `release` publie l'APK.
-- Tests : `flutter test` (logique des séances, paliers, versions, et vérification des 32 animations).
+- Tests : `flutter test` (logique des séances, paliers, versions, et vérification des 52 animations).

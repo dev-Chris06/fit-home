@@ -1,5 +1,12 @@
 # Historique des versions
 
+## 1.1.0
+
+- 20 nouveaux exercices animés (52 au total) : gainage latéral, crunch vélo, dead bug, relevé de bassin, position creuse, pont fessier, pont sur une jambe, soulevé de terre jambes tendues, ruade, squat sumo, pompes déclinées, développé Arnold, rowing inversé sous une table, kickback, pull-over, jumping jacks, burpees, talons-fesses, étirement des quadriceps, posture de l'enfant.
+- Nouvel onglet « Exercices » : la bibliothèque complète, filtrable par famille (Abdos et gainage, Jambes et fessiers, Haut du corps, Cardio, Mobilité) et par palier.
+- Chaque exercice indique son palier (1, 2 ou 3).
+- Bouton « Remplacer » dans le détail d'une séance : on échange un exercice contre un autre de la même famille ; le choix est retenu pour les séances suivantes et on peut revenir à l'exercice d'origine.
+
 ## 1.0.1
 
 - Séance guidée : les séries sont plus claires (« Série 2 sur 3 » avec des points), et le repos annonce la série qui suit.

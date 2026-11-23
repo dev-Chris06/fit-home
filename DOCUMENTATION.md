@@ -158,6 +158,38 @@ On pourra publier des APK séparés par processeur (`--split-per-abi`, environ 2
 - À la fin de la séance, `_autoSave()` crée l'entrée avec des valeurs par défaut (ressenti « correct », séries non cochées) ;
   chaque réponse rapide appelle `app.updateEntry()` qui remplace l'entrée par sa copie modifiée (`copyWith`).
 
+### Version 1.1.0 — Plus d'exercices, bibliothèque et remplacement
+
+Demande : augmenter le nombre d'exercices. Choix faits par QCM : environ 20 de plus, dans les quatre familles
+(abdos et gainage, fessiers et ischios, haut du corps, cardio et mobilité), consultables dans une bibliothèque et
+utilisables dans une séance via un bouton « Remplacer », tous niveaux confondus avec le palier indiqué.
+
+**Les données** (`lib/data/programme.dart`)
+- `Groups` : les cinq familles (Jambes et fessiers, Haut du corps, Abdos et gainage, Cardio, Mobilité).
+- `Exercise` reçoit `group`, `level` (1 à 3), `reps` (répétitions conseillées) et `seconds` (pour un maintien chronométré, sinon `null`).
+  Les 32 anciens exercices ont été classés, 20 nouveaux ajoutés : 52 au total.
+
+**Le remplacement** (`lib/data/session_plan.dart`, `lib/app_state.dart`)
+- `app.subs` : pour chaque séance, la table « exercice d'origine → remplaçant », enregistrée sur le téléphone (clé `subs`).
+- `effectiveItems()` applique d'abord les remplacements, puis les alternances habituelles (curl marteau, chaise, pompes classiques).
+  Un exercice remplacé garde son nombre de séries et prend les répétitions (ou la durée) du remplaçant ; en circuit, la durée reste 40 s.
+- Seuls les exercices de la même famille sont proposés ; « Revenir à … » annule le remplacement.
+
+**Les écrans**
+- Nouvel onglet « Exercices » (`library_screen.dart`) avec filtres par famille et par palier.
+- Détail de séance : bouton à double flèche à côté de chaque exercice, mention « Remplace : … » quand il a été échangé.
+- Fiche exercice : badge de palier et famille.
+
+**Les animations** : 20 nouvelles fonctions dans `exercise_anims.dart`, avec quelques aides (`_frontLegsBody` pour les vues de face,
+`_bridge` pour les ponts, `_handsAtTemples`, l'état d'un burpee). Le test « rien sous le sol » couvre les 52 animations,
+et les captures 13 et 14 montrent les 20 nouvelles en grand à deux instants.
+
+| Problème rencontré | Correction |
+| --- | --- |
+| Posture de l'enfant : la main éloignée passait sous le sol, puis la silhouette avait l'air allongée | Refaite : départ à genoux, fesses qui reculent sur les talons, buste couché sur les cuisses, bras devant, coude plié vers le haut |
+| Filtres de la bibliothèque trop larges pour l'écran (débordement de 16 px) | Filtres sur plusieurs lignes (`Wrap`) |
+| Le symbole ⇄ ne s'affichait pas avec la police de l'app | Remplacé par l'icône Material `swap_horiz` |
+
 ---
 
 ## Publier une nouvelle version (mode d'emploi)
