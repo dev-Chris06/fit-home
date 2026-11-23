@@ -157,12 +157,17 @@ class _ReminderScreenState extends State<ReminderScreen> {
                 },
               ),
           ],
-          const SizedBox(height: 20),
-          FilledButton(
+        ],
+      ),
+      // Le bouton reste toujours visible en bas de l'écran.
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: FilledButton(
             onPressed: saving || fixeEmpty ? null : _save,
             child: Text(widget.firstTime ? 'Continuer' : 'Enregistrer'),
           ),
-        ],
+        ),
       ),
     );
   }
